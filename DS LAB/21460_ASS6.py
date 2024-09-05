@@ -26,11 +26,13 @@ class Sorter:
 
         return end
 
-    def quickSort(self, elements, start, end):
+    def quickSort(self, elements, start, end, pass_num=1):
         if start < end:
             pi = self.partition(elements, start, end)
-            self.quickSort(elements, start, pi-1)
-            self.quickSort(elements, pi+1, end)
+            print(f"Pass {pass_num}: {elements}")  # Print each pass
+            pass_num += 1  # Increment pass number
+            self.quickSort(elements, start, pi-1, pass_num)
+            self.quickSort(elements, pi+1, end, pass_num)
         return elements
 
 
@@ -44,6 +46,6 @@ for i in range(n):
 obj = Sorter()
 quickResult = obj.quickSort(data, 0, n-1)
 
-print("\nTop 5 students(using quick sort): ")
+print("\nTop 5 students (using quick sort): ")
 for n, m in quickResult[:-6:-1]:
     print(m, ": ", n)
