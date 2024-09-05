@@ -1,180 +1,242 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QColorDialog>
+#include"QMouseEvent"
+#include"QtDebug"
 
-QImage image(300, 300, QImage::Format_RGB888);
-QImage image2(300, 300, QImage::Format_RGB888);
-static QColor color,color2;
-
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent),
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QRgb val=qRgb(3, 207, 252);
+    start=true;
+    ver=0;
 
+
+
+    dda(100,200,200,200,val);
+    dda(200,200,200,300,val);
+    dda(200,300,100,300,val);
+    dda(100,300,100,200,val);
 }
+
+QImage img=QImage(500,500,QImage::Format_RGB888);
+
+const int Left=1,Right=2,Top=8,Bottom=4,inside=0;
+
+const int xmin=100,ymin=200,xmax=200,ymax=300;
+static int cnt=1;
+void MainWindow::mousePressEvent(QMouseEvent *ev)
+{
+    QRgb green=qRgb(255,0,0);
+
+    int p=ev->pos().x(); // Taking the x position of mouse
+    int q=ev->pos().y(); // Taking the y position of mouse
+
+    a[ver]=p;
+    b[ver]=q+80;
+    if(start){
+
+
+
+            if(cnt%2==0){
+            if(ver>0)
+            {
+
+                dda(a[ver],b[ver],a[ver-1],b[ver-1],green);
+
+            }
+            }
+
+
+        ver++;
+cnt++;
+    }
+
+    }
+
+void MainWindow::dda(double x1,double y1,double x2,double y2,QRgb val)
+{
+
+
+
+    double dx=x2-x1,dy=y2-y1,steps=abs(dx)>abs(dy)?abs(dx):abs(dy);
+    double x=x1,y=y1;
+    double xinc=dx/steps,yinc=dy/steps;
+    for(int i=1;i<=steps;i++)
+
+    {
+        img.setPixel(x,y,val);
+        x+=xinc;
+        y+=yinc;
+    }
+    ui->label->setPixmap(QPixmap::fromImage(img));
+}
+void MainWindow::ddaline(double x1,double y1,double x2,double y2,QRgb val)
+{
+
+
+    double dx=x2-x1,dy=y2-y1,steps=abs(dx)>abs(dy)?abs(dx):abs(dy);
+    double x=x1,y=y1;
+    double xinc=dx/steps,yinc=dy/steps;
+    for(int i=1;i<=steps;i++)
+
+    {
+        img.setPixel(x,y,val);
+        x+=xinc;
+        y+=yinc;
+    }
+    ui->label_2->setPixmap(QPixmap::fromImage(img));
+}
+
+int MainWindow::sign(int x)
+{
+
+    if(x==0)
+    {
+        return 0;
+    }
+    if(x>0)
+    {
+        return 1;
+    }
+
+    return -1;
+}
+
+
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-void MainWindow::dda(float x1, float y1, float x2, float y2)
-{
-    float dy = y2 - y1;
-    float dx = x2 - x1;
-    float len = abs(dx);
-    if (abs(dy) > abs(dx))
-    {
-        len = abs(dy);
-    }
-    float x = x1;
-    float y = y1;
-    float xinc = dx / len;
-    float yinc = dy / len;
-    for (int i = 0; i <= len; i++)
-    {
-        x = x + xinc;
-        y = y + yinc;
-        image.setPixel(x, y, qRgb(255,255,255));
-    }
-    ui->label->setPixmap(QPixmap::fromImage(image));
-}
-void MainWindow::dda2(float x1, float y1, float x2, float y2)
-{
-    float dy = y2 - y1;
-    float dx = x2 - x1;
-    float len = abs(dx);
-    if (abs(dy) > abs(dx))
-    {
-        len = abs(dy);
-    }
-    float x = x1;
-    float y = y1;
-    float xinc = dx / len;
-    float yinc = dy / len;
-    for (int i = 0; i <= len; i++)
-    {
-        x = x + xinc;
-        y = y + yinc;
-        image2.setPixel(x, y, qRgb(255,255,255));
-    }
-    ui->label_2->setPixmap(QPixmap::fromImage(image2));
-}
-void MainWindow::window()
-{
-    dda(xmin, ymin, xmax, ymin);
-    dda(xmax, ymin, xmax, ymax);
-    dda(xmax, ymax, xmin, ymax);
-    dda(xmin, ymax, xmin, ymin);
-}
-void MainWindow::window1()
-{
-    dda2(xmin, ymin, xmax, ymin);
-    dda2(xmax, ymin, xmax, ymax);
-    dda2(xmax, ymax, xmin, ymax);
-    dda2(xmin, ymax, xmin, ymin);
-}
+
 
 void MainWindow::on_pushButton_clicked()
 {
-    window();
-    float x1, y1, x2, y2;
-    x1 = ui->textEdit->toPlainText().toFloat();
-    y1 = ui->textEdit_2->toPlainText().toFloat();
-    x2 = ui->textEdit_3->toPlainText().toFloat();
-    y2 = ui->textEdit_4->toPlainText().toFloat();
-    dda(x1, y1, x2, y2);
-    ui->label->setPixmap(QPixmap::fromImage(image));
+
+    for(int i=1;i<=ver-1;i+=2)
+    {
+        cohen(a[i],b[i],a[i-1],b[i-1]);
+    }
+//    cohen(a[ver-1],b[ver-1],a[0],b[0]);
+
 }
-int MainWindow::regioncode(double x, double y)
+
+int MainWindow::code(int x1,int y1)
 {
-    int code=0;
 
-    if(x<xmin){
-        code=code|Left;
-    }
-    if(x>xmax){
-        code=code|Right;
-    }
-    if(y<ymin){
-        code=code|Bot;
-    }
-    if(y>ymax){
-        code=code|Top;
-    }
 
-    return code;
 
+    int c=inside;
+    if(x1<xmin)
+    {
+        c=c | Left;
+    }
+   else if(x1>xmax)
+    {
+        c= c | Right;
+    }
+    if(y1<ymin)
+    {
+        c=c | Bottom;
+    }
+    else if(y1>ymax)
+    {
+        c=c | Top;
+    }
+    return c;
 }
 
-bool MainWindow::clipping(double &x1, double &y1, double &x2, double &y2)
+void MainWindow::cohen(int x1,int y1,int x2,int y2)
 {
-    int code;
-    double x,y;
 
+    int code1=code(x1,y1),code2=code(x2,y2);
 
-    while(true){
-        if(code1==0 && code2==0){
-            return true;
+    int a=x1,b=y1,c=x2,d=y2;
+
+    bool accept=false;
+
+    while(true)
+    {
+
+        if(code1==0 && code2==0)
+        {
+            accept=true;
+            break;
         }
-        else if(code1&code2){
-            return false;
+
+        else if(code1 & code2)         {
+            break;
+        }
+
+        else
+        {
+
+            int codeout;
+
+            if(code1!=0)
+            {
+                codeout=code1;
+            }
+            else
+            {
+                codeout=code2;
+            }
+
+            double x,y;
+
+            if(codeout & Top)
+            {
+                y=ymax;
+                x=x1+double((x2-x1)*(ymax-y1)/(y2-y1));
+            }
+
+            else if(codeout & Bottom)
+            {
+                y=ymin;
+                x=x1+double((ymin-y1)*(x2-x1)/(y2-y1));
+            }
+
+            else if(codeout & Left)
+            {
+                x=xmin;
+                y=y1+double((xmin-x1)*(y2-y1)/(x2-x1));
+            }
+
+            else if(codeout & Right)
+            {
+                x=xmax;
+                y=y1+double((xmax-x1)*(y2-y1)/(x2-x1));
+            }
+
+            if(codeout==code1)
+            {
+                x1=x;
+                y1=y;
+                code1=code(x1,y1);
+            }
+
+            else
+            {
+                x2=x;
+                y2=y;
+                code2=code(x2,y2);
+            }
 
         }
-        if(code1!=0){
-            code=code1;
-        }
-        else{
-            code=code2;
-        }
-        if(code&Top){
-            x=x1+(x2-x1)*(ymax-y1)/(y2-y1);
-            y=ymax;
 
-        }
-        if(code&Bot){
-            x=x1+(x2-x1)*(ymin-y1)/(y2-y1);
-            y=ymin;
-        }
-        if(code&Right){
-            y=y1+(y2-y1)*(xmax-x1)/(x2-x1);
-            x=xmax;
-        }
-        if(code&Left){
-            y=y1+(y2-y1)*(xmin-x1)/(x2-x1);
-            x=xmin;
-        }
-        if(code==code1){
-            x1=x;
-            y1=y;
-            code1=regioncode(x1,y1);
-        }
-        else{
-            x2=x;
-            y2=y;
-            code2=regioncode(x2,y2);
-        }
     }
 
 
-}
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    window1();
-    x1=ui->textEdit->toPlainText().toInt();
-    y1=ui->textEdit_2->toPlainText().toInt();
-    x2=ui->textEdit_3->toPlainText().toInt();
-    y2=ui->textEdit_4->toPlainText().toInt();
+    if(accept)
+    {
+        QRgb old=qRgb(0,0,0);
+        ddaline(a,b,c,d,old);
 
-    code1=regioncode(x1,y1);
-    code2=regioncode(x2,y2);
-
-    bool accept=clipping(x1,y1,x2,y2);
-
-    if(accept){
-        dda2(x1,y1,x2,y2);
-        ui->label_2->setPixmap(QPixmap::fromImage(image2));
+        QRgb ne=qRgb(0,225,0);
+        ddaline(x1,y1,x2,y2,ne);
     }
+
 }
-
-
