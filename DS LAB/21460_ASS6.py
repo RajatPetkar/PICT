@@ -9,24 +9,27 @@ class Sorter:
         arr[a], arr[b] = arr[b], arr[a]
 
     def partition(arr, low, high):
-    pivot = arr[high]
+        pivot = arr[high]
     
-    i = low - 1
+        i = low - 1
 
-    for j in range(low, high):
-        if arr[j] < pivot:
-            i += 1
-            arr[i], arr[j] = arr[j], arr[i]
+        for j in range(low, high):
+            if arr[j] < pivot:
+                i += 1
+                arr[i], arr[j] = arr[j], arr[i]
 
-    arr[i + 1], arr[high] = arr[high], arr[i + 1]
-    return i + 1
+        arr[i + 1], arr[high] = arr[high], arr[i + 1]
+        return i + 1
 
-def quick_sort(arr, low, high):
+def quick_sort(arr, low, high, pass_num=1):
     if low < high:
         pi = partition(arr, low, high)
-        print(f"{} Pass :- ")
-        quick_sort(arr, low, pi - 1)
-        quick_sort(arr, pi + 1, high)
+
+        print(f"Pass {pass_num}: {arr}")
+        pass_num += 1
+        
+        quick_sort(arr, low, pi - 1, pass_num)
+        quick_sort(arr, pi + 1, high, pass_num)
 
 
 n = int(input("Enter no. of students: "))
