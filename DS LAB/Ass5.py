@@ -11,22 +11,21 @@ class SortingOpr:
             print(f"Pass {i}: {elements}")
         return elements
 
-    def shellSort(self, elements, n):
-        gap = n // 2
-        pass_num = 1
-        while gap > 0:
-            for i in range(gap, n):
-                anchor = elements[i]
-                j = i
-                while j >= gap and elements[j-gap][0] > anchor[0]:
-                    elements[j] = elements[j-gap]
-                    j -= gap
-                elements[j] = anchor
-            # Print the array after each gap-based pass
-            print(f"Pass {pass_num} (gap={gap}): {elements}")
-            pass_num += 1
-            gap //= 2
-        return elements 
+    def shellSort(arr, n):
+    gap=n//2
+    while gap>0:
+        j=gap
+        while j<n:
+            i=j-gap 
+            
+            while i>=0:
+                if arr[i+gap]>arr[i]:
+                    break
+                else:
+                    arr[i+gap],arr[i]=arr[i],arr[i+gap]
+                i=i-gap
+            j+=1
+        gap=gap//2 
 
 # Input data
 n = int(input("Enter no. of students: "))
