@@ -70,6 +70,20 @@ void koch_curve::drawCurve(int it, int x1, int y1, int x2, int y2)
 
 }
 
+void koch_curve::drawSnowflake(int it, int x1, int y1, int size, int depth)
+{
+    int x2 = x1 + size;
+    int y2 = y1;
+
+    int x3 = x1 + size / 2;
+    int y3 = y1 - (int)(sqrt(3) * size / 2);
+
+    drawCurve(it, x1, y1, x2, y2);
+    drawCurve(it, x2, y2, x3, y3);
+    drawCurve(it, x3, y3, x1, y1);
+}
+
+
 void koch_curve::on_create_clicked()
 {
     img.fill(bgColor);
