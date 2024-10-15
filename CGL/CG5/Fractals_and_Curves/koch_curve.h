@@ -16,6 +16,8 @@ public:
     ~koch_curve();
     void dda(float x1, float y1, float x2, float y2);
     void drawCurve(int it, int x1, int y1, int x2, int y2);
+    void drawSnowflake(int it, int x1, int y1, int size, int depth);
+
 
 private slots:
     void on_create_clicked();
