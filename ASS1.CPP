@@ -1,119 +1,166 @@
 #include<iostream>
+#include<queue>
 using namespace std;
 
-struct Node{
+struct Node {
     char data;
     Node* left;
     Node* right;
+
+    Node(char value) {
+        data = value;
+        left = nullptr;
+        right = nullptr;
+    }
 };
 
-class BinaryTree{
-    public:
-        Node* root  = nullptr;
+
+void insert(Node* root, char data) {
+    if (root == nullptr) return;
 
 
-        Node* createNode(int data){
-            Node* newNode = new Node();
-            newNode->data = data;
-            newNode->left = nullptr;
-            newNode->right = nullptr;
-            return newNode;
-        };
+    queue<Node*> q;
+    q.push(root);
 
-        void insert(int data){
-            Node* newNode = createNode(data);
-            if(root == nullptr){
-                root = newNode;
-            } else {
-                if(root->left == nullptr) {
-                    root->left = newNode;
-                } else if(root->right == nullptr) {
-                    root->right = newNode;
-                }
-                else {
-                    insertRight(root,newNode);
-                }
-            }
+    while (!q.empty()) {
+        Node* current = q.front();
+        q.pop();
+
+
+        if (current->left == nullptr) {
+            current->left = new Node(data);
+            return;
+        } else {
+            q.push(current->left);
         }
 
-        void insertLeft(Node* node, Node* newNode) {
-            if (node->left == nullptr) {
-                node->left = newNode;
-            } else {
-                insertLeft(node->left, newNode);
-            }
+
+        if (current->right == nullptr) {
+            current->right = new Node(data);
+            return;
+        } else {
+            q.push(current->right);
         }
-
-        void insertRight(Node* node, Node* newNode) {
-              if (node->right == nullptr) {
-                    node->right = newNode;
-              } else {
-                    insertLeft(node->right, newNode);
-              }
-         }
+    }
+}
 
 
-        void preorder(Node* root){
-            if (root == nullptr) return;
-            cout << root->data << " -> ";
-            preorder(root->left);
-            preorder(root->right);
-        }
-        void Inorder(Node* root){
-            if (root == nullptr) return;
+void preorder(Node* root) {
+    if (root == nullptr) return;
+    cout << root->data << " -> ";
+    preorder(root->left);
+    preorder(root->right);
+}
 
-            Inorder(root->left);
-            cout << root->data << " -> ";
-            Inorder(root->right);
-        }
-        void postorder(Node* root){
-            if (root == nullptr) return;
-            postorder(root->left);
-            postorder(root->right);
-            cout<< root->data << " -> ";
 
-        }
-        int count(Node* root){
-        	int cnt = 0;
-            Node* temp = root;
-            while(temp!= nullptr ){
-            	if(temp->left != nullptr){
-            		temp = temp->left;
-            	}
-            	if(temp->right != nullptr){
-            		temp = temp->right;
-            	}
-            	if(temp->left == nullptr && temp->right==nullptr){
-            		cnt++;
-            	}
-            }
-            return cnt;
-        }
-};
+void inorder(Node* root) {
+    if (root == nullptr) return;
+    inorder(root->left);
+    cout << root->data << " -> ";
+    inorder(root->right);
+}
 
-int main(){
-    BinaryTree bt;
+
+void postorder(Node* root) {
+    if (root == nullptr) return;
+    postorder(root->left);
+    postorder(root->right);
+    cout << root->data << " -> ";
+}
+
+
+void count(Node* root,int &leaf , int &parent) {
+    if (root == nullptr) return ;
+    if (root->left == nullptr && root->right == nullptr)
+    	leaf++;
+    else
+    	parent++;
+
+    count(root->left,leaf,parent);
+    count(root->right,leaf,parent);
+}
+
+
+int countInternal(Node* root) {
+    if (root == nullptr) return 0;
+    if (root->left != nullptr || root->right != nullptr) {
+        return 1 + countInternal(root->left) + countInternal(root->right);
+    }
+    return 0;
+}
+
+int findHeight(Node* root){
+	if(root==nullptr){
+		return -1;
+	}
+	int leftHeight = findHeight(root->left);
+	int rightHeight = findHeight(root->right);
+	return max(leftHeight,rightHeight) + 1;
+}
+
+void Swap(Node* root){
+	if(root==nullptr){
+		return;
+	}
+	Swap(root->left);
+	Swap(root->right);
+                                           
+	Node* temp = root->left;
+	root->left = root->right;
+	root->right = temp;
+}
+
+int main() {
+    Node* root = nullptr;
+    int leaf = 0, parent = 0;
     int nodes;
-	char data;
-    cout<<"Enter how many nodes you want to insert :- ";
-    cin>>nodes;
+    char data;
 
-    for(int i=0;i<nodes;i++){
-        cout<<"Enter data :- ";
-        cin>>data;
-        bt.insert(data);
+    cout << "Enter how many nodes you want to insert: ";
+    cin >> nodes;
+
+    for (int i = 0; i < nodes; i++) {
+        cout << "Enter data: ";
+        cin >> data;
+
+        if (root == nullptr) {
+            root = new Node(data);
+        } else {
+            insert(root, data);
+        }
     }
 
-    bt.preorder(bt.root);
-    cout<<endl;
 
-    bt.Inorder(bt.root);
-    cout<<endl;
+    cout << "Preorder: ";
+    preorder(root);
+    cout << endl;
 
-    bt.postorder(bt.root);
-    cout<<endl;
+    cout << "Inorder: ";
+    inorder(root);
+    cout << endl;
 
-    cout<<bt.count(bt.root);
+    cout << "Postorder: ";
+    postorder(root);
+    cout << endl;
+
+    cout<<"\nAfter swapping :- \n";
+    Swap(root);
+    cout << "Preorder: ";
+    preorder(root);
+    cout << endl;
+
+    cout << "Inorder: ";
+    inorder(root);
+    cout << endl;
+
+    cout << "Postorder: ";
+    postorder(root);
+    cout << endl;
+
+    count(root,leaf,parent);
+    cout << "Number of leaf nodes: " <<leaf<<endl;
+    cout << "Number of internal nodes: " << parent<<endl;
+    cout << "Height of tree : " << findHeight(root) << endl;
 
     return 0;
 }
