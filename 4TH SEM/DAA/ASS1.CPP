@@ -81,13 +81,13 @@ void count(Node* root,int &leaf , int &parent) {
 }
 
 
-int countInternal(Node* root) {
-    if (root == nullptr) return 0;
-    if (root->left != nullptr || root->right != nullptr) {
-        return 1 + countInternal(root->left) + countInternal(root->right);
-    }
-    return 0;
-}
+// int countInternal(Node* root) {
+//     if (root == nullptr) return 0;
+//     if (root->left != nullptr || root->right != nullptr) {
+//         return 1 + countInternal(root->left) + countInternal(root->right);
+//     }
+//     return 0;
+// }
 
 int findHeight(Node* root){
 	if(root==nullptr){
@@ -96,6 +96,35 @@ int findHeight(Node* root){
 	int leftHeight = findHeight(root->left);
 	int rightHeight = findHeight(root->right);
 	return max(leftHeight,rightHeight) + 1;
+}
+
+Node* copy(Node* root){
+    if(root==nullptr){
+        return nullptr;
+    }
+    Node* temp = new Node(root->data);
+    if(root->left !=nullptr){
+        temp->left = root->left;
+    }
+    if(root->right != nullptr){
+        temp->right = root->right;
+    }
+    copy(root->left);
+    copy(root->right);
+
+    return temp;
+}
+
+void del(Node* root) {
+    if (root == nullptr) return;
+    if(root->left){
+        root->left = nullptr;
+    }else{
+        root->right = nullptr;
+    }
+    del(root->left);
+    del(root->right);
+    delete root;
 }
 
 void Swap(Node* root){
@@ -161,6 +190,12 @@ int main() {
     cout << "Number of leaf nodes: " <<leaf<<endl;
     cout << "Number of internal nodes: " << parent<<endl;
     cout << "Height of tree : " << findHeight(root) << endl;
+
+    Node* root2 = copy(root);
+    inorder(root2);
+    cout<<endl;
+    del(root2);
+    inorder(root2);
 
     return 0;
 }
