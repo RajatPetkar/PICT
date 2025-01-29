@@ -80,15 +80,6 @@ void count(Node* root,int &leaf , int &parent) {
     count(root->right,leaf,parent);
 }
 
-
-// int countInternal(Node* root) {
-//     if (root == nullptr) return 0;
-//     if (root->left != nullptr || root->right != nullptr) {
-//         return 1 + countInternal(root->left) + countInternal(root->right);
-//     }
-//     return 0;
-// }
-
 int findHeight(Node* root){
 	if(root==nullptr){
 		return -1;
@@ -117,13 +108,10 @@ Node* copy(Node* root){
 
 void del(Node* root) {
     if (root == nullptr) return;
-    if(root->left){
-        root->left = nullptr;
-    }else{
-        root->right = nullptr;
-    }
     del(root->left);
     del(root->right);
+    root->left = nullptr;
+    root->right = nullptr;
     delete root;
 }
 
@@ -181,11 +169,9 @@ int main() {
     cout << "Inorder: ";
     inorder(root);
     cout << endl;
-
     cout << "Postorder: ";
     postorder(root);
     cout << endl;
-
     count(root,leaf,parent);
     cout << "Number of leaf nodes: " <<leaf<<endl;
     cout << "Number of internal nodes: " << parent<<endl;
@@ -196,6 +182,6 @@ int main() {
     cout<<endl;
     del(root2);
     inorder(root2);
-
     return 0;
+
 }
