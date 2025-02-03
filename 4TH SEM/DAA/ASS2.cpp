@@ -183,6 +183,60 @@ void search(Node* root,int s){
     }
 }
 
+ void delNode(Node *root, int element) {
+    if (root == nullptr) {
+        return; 
+    }
+    Node* parent = nullptr;
+    Node* temp = root;
+
+    while (temp != nullptr && temp->data != element) {
+        parent = temp;
+
+        if (element < temp->data) {
+            if (temp->left != nullptr) {
+                temp = temp->left;
+            } else {
+                return; 
+            }
+        } else {
+            if (temp->right != nullptr) {
+                temp = temp->right;
+            } else {
+                return; 
+            }
+        }
+    }
+
+    if (temp->left == nullptr && temp->right == nullptr) {
+        
+        if (parent == nullptr) {
+            delete temp;  
+            root = nullptr; 
+        } else {
+            if (parent->left == temp) {
+                parent->left = nullptr;
+            } else {
+                parent->right = nullptr;
+            }
+            delete temp;
+        }
+    }
+    else if(temp->left==NULL || temp->right==NULL){
+        Node* child = (temp->left != nullptr) ? temp->left : temp->right;
+        if(parent == nullptr){
+            root = child;
+        }else{
+            if (parent->left == temp) {
+                parent->left = child;
+            } else {
+                parent->right = child;
+            }
+        }
+        delete temp;
+    }
+}
+
 int main() {
     Node* root = nullptr;
     int leaf = 0, parent = 0;
@@ -223,6 +277,8 @@ int main() {
     cout<<"enter element to search :";
     cin>>ch;
     search(root,ch);
+    delNode(root,ch);
+    preorder(root);
     // cout<<"\nAfter swapping :- \n";
     // Swap(root);
     // cout << "Preorder: ";
