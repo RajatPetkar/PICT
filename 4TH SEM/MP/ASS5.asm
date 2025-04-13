@@ -41,9 +41,9 @@ _start:
     dec byte[counter]
     jnz back1
 
-    mov byte[counter],05
-    mov byte[pcount],0
-    mov byte[ncount],0
+    ;mov byte[counter],05
+    ;mov byte[pcount],0
+    ;mov byte[ncount],0
 
 
     ;mov rsi,array
@@ -69,6 +69,26 @@ _start:
     ;dec byte[counter]
     ;jnz back2
 
+mov byte[counter], 5
+mov byte[pcount], 0
+mov byte[ncount], 0
+mov rsi, array
+
+back2:
+    mov rax, [rsi]
+    test rax, rax         ; Check sign
+    js is_negative        ; If negative (Sign bit = 1)
+
+    inc byte[pcount]      ; Otherwise, it's positive
+    jmp next_check
+
+is_negative:
+    inc byte[ncount]
+
+next_check:
+    add rsi, 8
+    dec byte[counter]
+    jnz back2
 
 
     write msg4,lenmsg4
