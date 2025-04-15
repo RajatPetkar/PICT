@@ -1,62 +1,73 @@
 section .data
-    array dd 10, 20, 30, 40, 50   ;
-    array_size equ ($ - array) / 4 ;
-    sum_msg db 'Sum: ', 0         
-    sum_len equ $ - sum_msg        
-    newline db 10                 
+    prompt: db "Enter a string: ", 0xA
+    plen :  equ $ - prompt
+
+    msg1 : db "Palindrome", 0xA
+    msg1len : equ $ - msg1
+
+    msg2 : db "Not Palindrome", 0xA
+    msg2len : equ $ - msg2
 
 section .bss
-    sum_str resb 10                
+    str : resb 100       
+    len : resb 1          
+
 section .text
     global _start
 
 _start:
-    
-    mov ecx, array_size
-    mov esi, 0
-    mov eax, 0
+    ; Print prompt
+    mov rax, 1            
+    mov rdi, 1           
+    mov rdx, plen
+    syscall
 
-sum_loop:
-    add eax, [array + esi*4]
-    inc esi
-    loop sum_loop
+    ; Read input
+    mov rax, 0            
+    mov rdi, 0            
+    mov rsi, str
+    mov rdx, 100
+    syscall
+    mov [len], al        
 
    
-    mov edi, sum_str + 9   
-    mov byte [edi], 0     
-    mov ebx, 10            
+    movzx rcx, byte [len]
+    dec rcx              
+    mov byte [str + rcx], 0  
 
-convert_loop:
-    xor edx, edx           
-    div ebx               
-    add dl, '0'           
-    dec edi                
-    mov [edi], dl         
-    test eax, eax         
-    jnz convert_loop       
+    ; Setup pointers
+    lea rsi, [str]      
+    lea rdi, [str + rcx - 1]  
 
-    
-    mov eax, 4            
-    mov ebx, 1           
-    mov ecx, sum_msg       
-    mov edx, sum_len       
-    int 0x80
+pal_check:
+    cmp rsi, rdi
+    jge show_palindrome
 
-    mov eax, 4            
-    mov ebx, 1             
-    mov ecx, edi           
-    mov edx, sum_str + 10 
-    sub edx, edi
-    int 0x80
+    mov al, [rsi]
+    mov bl, [rdi]
+    cmp al, bl
+    jne show_not_palindrome
 
-    
-    mov eax, 4            
-    mov ebx, 1            
-    mov ecx, newline       
-    mov edx, 1             
-    int 0x80
+    inc rsi
+    dec rdi
+    jmp pal_check
 
-    
-    mov eax, 1             
-    mov ebx, 0             
-    int 0x80
+show_palindrome:
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg1
+    mov rdx, msg1len
+    syscall
+    jmp exit
+
+show_not_palindrome:
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, msg2
+    mov rdx, msg2len
+    syscall
+
+exit:
+    mov rax, 60
+    xor rdi, rdi
+    syscall
