@@ -1,60 +1,96 @@
 section .data
-    prompt db "Enter a string: ", 0
-    output db "Reversed string: ", 0
-    buffer resb 100     
-    reversed resb 100    
+    prompt: db "Enter a string: ", 0xA
+    plen : equ $ - prompt
+
+    result : db "Word count: "
+    rlen :  equ $ - result
+
+    newline db 0xA
+
+section .bss
+    str : resb 100
+    count :resb 1
 
 section .text
     global _start
 
 _start:
-    
-    mov rax, 1         
-    mov rdi, 1          
+    ; Show prompt
+    mov rax, 1
+    mov rdi, 1
     mov rsi, prompt
-    mov rdx, 15         
+    mov rdx, plen
     syscall
 
     ; Read input
     mov rax, 0
-    mov rdi, 0          
-    mov rsi, buffer
-    mov rdx, 100       
+    mov rdi, 0
+    mov rsi, str
+    mov rdx, 100
     syscall
-
-    
-    mov r8, rax         
-    dec r8              
-    mov rsi, buffer     
-    add rsi, r8        
-    dec rsi             
+    mov rbx, rax       
 
    
-    mov rdi, reversed   
-    mov rcx, r8       
+    dec rbx
+    mov byte [str + rbx], 0
 
-reverse_loop:
-    mov al, [rsi]       
-    mov [rdi], al     
-    dec rsi             
-    inc rdi             
-    loop reverse_loop   
+    ; Initialize
+    xor rcx, rcx       
+    xor r8b, r8b      
+    lea rsi, [str]
 
-    
-    mov rax, 1          
-    mov rdi, 1          
-    mov rsi, output
-    mov rdx, 17        
+next_char:
+    mov al, [rsi]
+    cmp al, 0
+    je done
+
+    cmp al, ' '
+    je is_space
+
+    cmp r8b, 0         
+    jne skip_inc
+
+    inc rcx            
+
+skip_inc:
+    mov r8b, 1
+    jmp advance
+
+is_space:
+    mov r8b, 0
+
+advance:
+    inc rsi
+    jmp next_char
+
+done:
+    ; Convert word count in rcx to ASCII for display
+    add cl, '0'
+    mov [count], cl   
+
+    ; Print result label
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, result
+    mov rdx, rlen
     syscall
 
-   
-    mov rax, 1          
-    mov rdi, 1     
-    mov rsi, reversed
-    mov rdx, r8        
+    ; Print count
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, count     
+    mov rdx, 1
     syscall
 
- 
-    mov rax, 60        
-    xor rdi, rdi       
+
+    ; Newline
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, newline
+    mov rdx, 1
+    syscall
+
+    ; Exit
+    mov rax, 60
+    xor rdi, rdi
     syscall
