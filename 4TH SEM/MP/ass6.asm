@@ -15,24 +15,41 @@ section .bss
 section .text
     global _start
 
+; Macro for system write
+%macro sys_write 2
+    mov eax, 4
+    mov ebx, 1
+    mov ecx, %1
+    mov edx, %2
+    int 0x80
+%endmacro
+
+; Macro for system read
+%macro sys_read 2
+    mov eax, 3
+    mov ebx, 0
+    mov ecx, %1
+    mov edx, %2
+    int 0x80
+%endmacro
+
+; Macro for system exit
+%macro sys_exit 1
+    mov eax, 1
+    mov ebx, %1
+    int 0x80
+%endmacro
+
 _start:
     call show_menu
     jmp _start
 
 show_menu:
     ; Display menu
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, prompt_choice
-    mov edx, 43
-    int 0x80
+    sys_write prompt_choice, 43
 
     ; Get choice
-    mov eax, 3
-    mov ebx, 0
-    mov ecx, choice
-    mov edx, 2
-    int 0x80
+    sys_read choice, 2
 
     ; Process choice
     cmp byte [choice], '1'
@@ -46,23 +63,43 @@ show_menu:
 
 do_hex_to_bcd:
     ; Get hex input
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, prompt_hex
-    mov edx, 23
-    int 0x80
-
-    mov eax, 3
-    mov ebx, 0
-    mov ecx, input
-    mov edx, 5
-    int 0x80
+    sys_write prompt_hex, 23
+    sys_read input, 5
 
     ; Convert hex to binary
+    call hex_to_binary
+    
+    ; Convert to BCD
+    call binary_to_bcd
+    
+    ; Show result
+    sys_write hex_result, 12
+    sys_write output, 5
+    call new_line
+    ret
+
+do_bcd_to_hex:
+    ; Get BCD input
+    sys_write prompt_bcd, 19
+    sys_read input, 6
+
+    ; Convert BCD to binary
+    call bcd_to_binary
+    
+    ; Convert to hex string
+    call binary_to_hex
+    
+    ; Show result
+    sys_write bcd_result, 14
+    sys_write output, 4
+    call new_line
+    ret
+
+hex_to_binary:
     xor eax, eax
     mov ecx, 4
     mov esi, input
-hex_loop:
+.hex_loop:
     shl eax, 4
     mov bl, [esi]
     cmp bl, '9'
@@ -72,67 +109,41 @@ hex_loop:
     sub bl, '0'
     or al, bl
     inc esi
-    loop hex_loop
+    loop .hex_loop
+    ret
 
-    ; Convert to BCD
+binary_to_bcd:
     xor edx, edx
     mov ebx, 10
     mov ecx, 5
     mov edi, output+4
-bcd_loop:
+.bcd_loop:
     xor edx, edx
     div ebx
     add dl, '0'
     mov [edi], dl
     dec edi
-    loop bcd_loop
-
-    ; Show result
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, hex_result
-    mov edx, 12
-    int 0x80
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, output
-    mov edx, 5
-    int 0x80
-    call new_line
+    loop .bcd_loop
     ret
 
-do_bcd_to_hex:
-    ; Get BCD input
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, prompt_bcd
-    mov edx, 19
-    int 0x80
-
-    mov eax, 3
-    mov ebx, 0
-    mov ecx, input
-    mov edx, 6
-    int 0x80
-
-    ; Convert BCD to binary
+bcd_to_binary:
     xor eax, eax
     mov ecx, 5
     mov esi, input
     mov ebx, 10
-num_loop:
+.num_loop:
     imul eax, ebx
     mov dl, [esi]
     sub dl, '0'
     add eax, edx
     inc esi
-    loop num_loop
+    loop .num_loop
+    ret
 
-    ; Convert to hex string
+binary_to_hex:
     mov ecx, 4
     mov edi, output+3
-hexstr_loop:
+.hexstr_loop:
     mov edx, eax
     and edx, 0xF
     cmp dl, 9
@@ -143,40 +154,16 @@ hexstr_loop:
     mov [edi], dl
     shr eax, 4
     dec edi
-    loop hexstr_loop
-
-    ; Show result
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, bcd_result
-    mov edx, 14
-    int 0x80
-
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, output
-    mov edx, 4
-    int 0x80
-    call new_line
+    loop .hexstr_loop
     ret
 
 show_error:
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, invalid_msg
-    mov edx, 13
-    int 0x80
+    sys_write invalid_msg, 13
     ret
 
 new_line:
-    mov eax, 4
-    mov ebx, 1
-    mov ecx, newline
-    mov edx, 1
-    int 0x80
+    sys_write newline, 1
     ret
 
 exit:
-    mov eax, 1
-    xor ebx, ebx
-    int 0x80
+    sys_exit 0
