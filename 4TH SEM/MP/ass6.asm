@@ -78,23 +78,6 @@ do_hex_to_bcd:
     call new_line
     ret
 
-do_bcd_to_hex:
-    ; Get BCD input
-    sys_write prompt_bcd, 19
-    sys_read input, 6
-
-    ; Convert BCD to binary
-    call bcd_to_binary
-    
-    ; Convert to hex string
-    call binary_to_hex
-    
-    ; Show result
-    sys_write bcd_result, 14
-    sys_write output, 4
-    call new_line
-    ret
-
 hex_to_binary:
     xor eax, eax
     mov ecx, 4
@@ -124,6 +107,23 @@ binary_to_bcd:
     mov [edi], dl
     dec edi
     loop .bcd_loop
+    ret
+
+do_bcd_to_hex:
+    ; Get BCD input
+    sys_write prompt_bcd, 19
+    sys_read input, 6
+
+    ; Convert BCD to binary
+    call bcd_to_binary
+    
+    ; Convert to hex string
+    call binary_to_hex
+    
+    ; Show result
+    sys_write bcd_result, 14
+    sys_write output, 4
+    call new_line
     ret
 
 bcd_to_binary:
