@@ -41,34 +41,6 @@ _start:
     dec byte[counter]
     jnz back1
 
-    ;mov byte[counter],05
-    ;mov byte[pcount],0
-    ;mov byte[ncount],0
-
-
-    ;mov rsi,array
-    ;mov rax,0
-    ;back2:cmp rax,[rsi]
-    ;jg skip
-    ;inc  byte[pcount]
-    ;jmp next
-    ;skip:inc byte[ncount]
-    ;next :add rsi,08
-    ;dec byte[counter]
-    ;jnz back2
-
-    ;mov rsi,array
-    ;mov rax,0
-    ;back2:mov rax,[rsi]
-    ;rol al,1
-    ;jc skip
-    ;inc byte[pcount]
-    ;jmp next
-    ;skip: inc byte[ncount]
-    ;next:add rsi,08
-    ;dec byte[counter]
-    ;jnz back2
-
 mov byte[counter], 5
 mov byte[pcount], 0
 mov byte[ncount], 0
