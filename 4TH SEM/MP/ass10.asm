@@ -26,7 +26,30 @@ section .text
 
 _start:
     
-    mov r8, 5                       
+    ;mov r8, 5   
+
+; Get the first command-line argument (argv[1])
+    pop rcx        ; Get argc
+    cmp rcx, 2     ; Check if we have at least one argument
+    jl no_argument
+    
+    pop rdi        ; Skip argv[0] (program name)
+    pop rdi        ; Get argv[1] (the number string)
+    
+    ; Convert the string to integer
+    xor r8, r8     ; Clear r8 for our result
+    xor rax, rax   ; Clear rax
+    xor rcx, rcx   ; Clear rcx
+    
+convert_loop:
+    movzx rax, byte [rdi]  ; Get next character
+    cmp al, 0             ; Check for null terminator
+    je convert_done
+    sub al, '0'           ; Convert from ASCII to digit
+    imul r8, r8, 10       ; Multiply current result by 10
+    add r8, rax           ; Add current digit
+    inc rdi               ; Move to next character
+    jmp convert_loop
     mov r9, r8                     
 
 factorial_loop:
