@@ -1,87 +1,94 @@
 %macro print 2
-    mov rax, 1                     
-    mov rdi, 1                    
-    mov rsi, %1                   
-    mov rdx, %2                  
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, %1
+    mov rdx, %2
     syscall
 %endmacro
 
 %macro exit 0
-    mov rax, 60                    
-    xor rdi, rdi                  
+    mov rax, 60
+    xor rdi, rdi
     syscall
 %endmacro
 
 section .data
-    message db "Factorial: ", 0     
-    len equ $ - message            
-    result db "Result: ", 0        
-    res_len equ $ - result         
+    message db "Factorial: ", 0
+    len equ $ - message
+    result db "Result: ", 0
+    res_len equ $ - result
 
 section .bss
-    num resb 10                     
+    num resb 20     ; enough space to store 64-bit number as string
 
 section .text
     global _start
 
 _start:
-    
-    ;mov r8, 5   
 
-; Get the first command-line argument (argv[1])
-    pop rcx        ; Get argc
-    cmp rcx, 2     ; Check if we have at least one argument
+    pop rcx
+    cmp rcx, 2
     jl no_argument
-    
-    pop rdi        ; Skip argv[0] (program name)
-    pop rdi        ; Get argv[1] (the number string)
-    
-    ; Convert the string to integer
-    xor r8, r8     ; Clear r8 for our result
-    xor rax, rax   ; Clear rax
-    xor rcx, rcx   ; Clear rcx
-    
+
+    pop rdi        ; Skip program name
+    pop rdi        ; Get argv[1] (number)
+
+    ; Convert ASCII to integer in r8
+    xor r8, r8
+    xor rax, rax
+
 convert_loop:
-    movzx rax, byte [rdi]  ; Get next character
-    cmp al, 0             ; Check for null terminator
+    movzx rax, byte [rdi]
+    cmp al, 0
     je convert_done
-    sub al, '0'           ; Convert from ASCII to digit
-    imul r8, r8, 10       ; Multiply current result by 10
-    add r8, rax           ; Add current digit
-    inc rdi               ; Move to next character
+    sub al, '0'
+    imul r8, r8, 10
+    add r8, rax
+    inc rdi
     jmp convert_loop
-    mov r9, r8                     
+
+convert_done:
+    mov r9, r8      ; Store original number for factorial
+
+    ; Compute factorial
+    dec r8
+    cmp r8, 1
+    jl factorial_end
 
 factorial_loop:
-    dec r8                          
-    cmp r8, 1                       
-    jle factorial_end               
-    imul r9, r8                    
-    jmp factorial_loop              
+    imul r9, r8
+    dec r8
+    cmp r8, 1
+    jge factorial_loop
 
 factorial_end:
-   
     print message, len
 
+    mov rsi, num
+    mov rax, r9
+    call int_to_str
 
-    mov rsi, num                  
-    mov rax, r9                   
-    call int_to_str                
-
-    print num, 10                   
+    mov rdx, num + 20
+    sub rdx, rsi
+    print rsi, rdx
 
     exit
 
-int_to_str:
-    add rsi, 9                     
-    mov rcx, 10                     
+no_argument:
+    print result, res_len
+    exit
 
-loop_convert:
-    xor rdx, rdx                   
-    div rcx                        
-    add dl, '0'                   
-    dec rsi                     
-    mov [rsi], dl                   
-    cmp rax, 0                      
-    jne loop_convert              
-    ret                        
+; Converts integer in RAX to string at RSI
+int_to_str:
+    add rsi, 20
+    mov rcx, 10
+
+.loop_convert:
+    xor rdx, rdx
+    div rcx
+    add dl, '0'
+    dec rsi
+    mov [rsi], dl
+    test rax, rax
+    jnz .loop_convert
+    ret
