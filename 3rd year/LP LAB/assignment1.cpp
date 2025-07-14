@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <queue>
+#include <iomanip>
 using namespace std;
 
 struct Process {
@@ -9,8 +10,19 @@ struct Process {
     int remaining, start = -1, waiting = 0, turnaround = 0, complete = 0;
 };
 
-void printResult(vector<Process> p) {
+struct Result {
+    string algoName;
+    float avgWT;
+    float avgTAT;
+};
+
+bool arrivalCompare(Process a, Process b) {
+    return a.arrival < b.arrival;
+}
+
+Result printResult(vector<Process> p, string algoName) {
     float totalWT = 0, totalTAT = 0;
+    cout << "\n=== " << algoName << " ===";
     cout << "\nPID\tArrival\tBurst\tPriority\tWaiting\tTurnaround\n";
     for (auto& pr : p) {
         cout << pr.pid << "\t" << pr.arrival << "\t" << pr.burst << "\t" << pr.priority
@@ -19,15 +31,14 @@ void printResult(vector<Process> p) {
         totalTAT += pr.turnaround;
     }
     int n = p.size();
-    cout << "\nAverage Waiting Time = " << totalWT / n;
-    cout << "\nAverage Turnaround Time = " << totalTAT / n << "\n";
+    float avgWT = totalWT / n;
+    float avgTAT = totalTAT / n;
+    cout << "Average Waiting Time = " << avgWT << "\n";
+    cout << "Average Turnaround Time = " << avgTAT << "\n";
+    return {algoName, avgWT, avgTAT};
 }
 
-bool arrivalCompare(Process a, Process b) {
-    return a.arrival < b.arrival;
-}
-
-void fcfs(vector<Process> p) {
+Result fcfs(vector<Process> p) {
     sort(p.begin(), p.end(), arrivalCompare);
     int time = 0;
     for (auto& pr : p) {
@@ -36,10 +47,10 @@ void fcfs(vector<Process> p) {
         time += pr.burst;
         pr.turnaround = pr.waiting + pr.burst;
     }
-    printResult(p);
+    return printResult(p, "FCFS");
 }
 
-void sjf(vector<Process> p) {
+Result sjf(vector<Process> p) {
     int n = p.size(), complete = 0, time = 0;
     for (auto& pr : p) pr.remaining = pr.burst;
     while (complete < n) {
@@ -63,10 +74,10 @@ void sjf(vector<Process> p) {
             p[idx].waiting = p[idx].turnaround - p[idx].burst;
         }
     }
-    printResult(p);
+    return printResult(p, "SJF (Preemptive)");
 }
 
-void priority(vector<Process> p) {
+Result priority(vector<Process> p) {
     int n = p.size(), complete = 0, time = 0;
     for (auto& pr : p) pr.remaining = pr.burst;
     while (complete < n) {
@@ -90,60 +101,70 @@ void priority(vector<Process> p) {
             p[idx].waiting = p[idx].turnaround - p[idx].burst;
         }
     }
-    printResult(p);
+    return printResult(p, "Priority (Preemptive)");
 }
 
-// void roundRobin(vector<Process> p, int quantum) {
-//     int n = p.size(), time = 0, complete = 0;
-//     queue<int> q;
-//     vector<bool> inQ(n, false);
-//     for (int i = 0; i < n; i++) p[i].remaining = p[i].burst;
+Result roundRobin(vector<Process> p, int quantum) {
+    int n = p.size(), time = 0, complete = 0;
+    queue<int> q;
+    vector<bool> inQ(n, false);
+    for (int i = 0; i < n; i++) p[i].remaining = p[i].burst;
 
-//     sort(p.begin(), p.end(),arrivalCompare);
+    sort(p.begin(), p.end(), arrivalCompare);
 
-//     q.push(0); inQ[0] = true;
+    q.push(0); inQ[0] = true;
 
-//     while (complete < n) {
-//         if (q.empty()) {
-//             for (int i = 0; i < n; i++) {
-//                 if (p[i].remaining > 0 && p[i].arrival > time) {
-//                     time = p[i].arrival;
-//                     q.push(i);
-//                     inQ[i] = true;
-//                     break;
-//                 }
-//             }
-//             continue;
-//         }
+    while (complete < n) {
+        if (q.empty()) {
+            for (int i = 0; i < n; i++) {
+                if (p[i].remaining > 0 && p[i].arrival > time) {
+                    time = p[i].arrival;
+                    q.push(i);
+                    inQ[i] = true;
+                    break;
+                }
+            }
+            continue;
+        }
 
-//         int i = q.front(); q.pop();
-//         int run = min(quantum, p[i].remaining);
-//         p[i].remaining -= run;
-//         time += run;
+        int i = q.front(); q.pop();
+        int run = min(quantum, p[i].remaining);
+        p[i].remaining -= run;
+        time += run;
 
-//         for (int j = 0; j < n; j++) {
-//             if (!inQ[j] && p[j].arrival <= time && p[j].remaining > 0) {
-//                 q.push(j);
-//                 inQ[j] = true;
-//             }
-//         }
+        for (int j = 0; j < n; j++) {
+            if (!inQ[j] && p[j].arrival <= time && p[j].remaining > 0) {
+                q.push(j);
+                inQ[j] = true;
+            }
+        }
 
-//         if (p[i].remaining > 0) {
-//             q.push(i);
-//         } else {
-//             p[i].complete = time;
-//             p[i].turnaround = time - p[i].arrival;
-//             p[i].waiting = p[i].turnaround - p[i].burst;
-//             complete++;
-//         }
-//     }
+        if (p[i].remaining > 0) {
+            q.push(i);
+        } else {
+            p[i].complete = time;
+            p[i].turnaround = time - p[i].arrival;
+            p[i].waiting = p[i].turnaround - p[i].burst;
+            complete++;
+        }
+    }
 
-//     printResult(p);
-// }
+    return printResult(p, "Round Robin");
+}
+
+void comparePrint(vector<Result> results) {
+    cout << "\n=== Algorithm Comparison Summary ===\n";
+    cout << left << setw(25) << "Algorithm" << setw(20) << "Avg Waiting Time" << setw(20) << "Avg Turnaround Time" << "\n";
+    for (auto& res : results) {
+        cout << left << setw(25) << res.algoName
+             << setw(20) << res.avgWT
+             << setw(20) << res.avgTAT << "\n";
+    }
+}
 
 int main() {
-    int n, choice, quantum;
-    vector<Process> p;
+    int n, quantum;
+    vector<Process> original;
     cout << "Enter number of processes: ";
     cin >> n;
 
@@ -154,24 +175,19 @@ int main() {
         cout << "Arrival Time: "; cin >> temp.arrival;
         cout << "Burst Time: "; cin >> temp.burst;
         cout << "Priority (lower is better): "; cin >> temp.priority;
-        p.push_back(temp);
+        original.push_back(temp);
     }
 
     cout << "Enter time slice for Round Robin: ";
     cin >> quantum;
 
-    do {
-        cout << "\nMenu:\n1. FCFS\n2. SJF (Preemptive)\n3. Priority (Preemptive)\n4. Round Robin\n5. Exit\nChoice: ";
-        cin >> choice;
-        switch (choice) {
-            case 1: fcfs(p); break;
-            case 2: sjf(p); break;
-            case 3: priority(p); break;
-            // case 4: roundRobin(p, quantum); break;
-            case 5: cout << "Exiting...\n"; break;
-            default: cout << "Invalid choice\n";
-        }
-    } while (choice != 5);
+    // Store results for all algorithms
+    vector<Result> results;
+    results.push_back(fcfs(original));
+    results.push_back(sjf(original));
+    results.push_back(priority(original));
+    results.push_back(roundRobin(original, quantum));
 
+    comparePrint(results);
     return 0;
 }
