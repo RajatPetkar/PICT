@@ -13,7 +13,7 @@ struct OptabEntry {
     string classType;
     int opcode;
 
-    OptabEntry() = default; // <-- add this
+    OptabEntry() = default;
     OptabEntry(string m, string c, int o) : mnemonic(m), classType(c), opcode(o) {}
 };
 
@@ -22,7 +22,7 @@ struct Symbol {
     int address;
     bool defined;
 
-    Symbol() = default; // <-- add this
+    Symbol() = default;
     Symbol(string s, int a, bool d) : symbol(s), address(a), defined(d) {}
 };
 
@@ -30,10 +30,9 @@ struct Literal {
     string literal;
     int address;
 
-    Literal() = default; // <-- add this
+    Literal() = default;
     Literal(string l, int a) : literal(l), address(a) {}
 };
-
 
 map<string, OptabEntry> OPTAB;
 map<string, Symbol> SYMTAB;
@@ -64,7 +63,9 @@ void processLiterals() {
     if (literalPointer == LITTAB.size()) return;
     POOLTAB.push_back(literalPointer);
     while (literalPointer < LITTAB.size()) {
-        LITTAB[literalPointer].address = IC++;
+        LITTAB[literalPointer].address = IC;
+        cout << setw(4) << setfill('0') << IC << "\t(DL,01)\t(C," << LITTAB[literalPointer].literal.substr(2, LITTAB[literalPointer].literal.size()-3) << ")" << endl;
+        IC++;
         literalPointer++;
     }
 }
@@ -86,6 +87,7 @@ int main() {
     ifstream infile("input.asm");
     string line;
 
+    cout << "\nIntermediate Code:\nAddress\tCode\n";
     while (getline(infile, line)) {
         if (line.empty()) continue;
 
@@ -136,18 +138,26 @@ int main() {
         }
 
         string classType = it->second.classType;
+        int opcodeVal = it->second.opcode;
 
         if (classType == "AD") {
             if (opcode == "START") {
                 IC = stoi(operand);
-            } else if (opcode == "END" || opcode == "LTORG") {
+                cout << setw(4) << setfill('0') << IC << "\t(AD,01)\t(C," << operand << ")" << endl;
+            } else if (opcode == "END") {
+                cout << setw(4) << setfill('0') << IC << "\t(AD,02)" << endl;
+                processLiterals();
+            } else if (opcode == "LTORG") {
+                cout << setw(4) << setfill('0') << IC << "\t(AD,05)" << endl;
                 processLiterals();
             } else if (opcode == "ORIGIN") {
                 if (SYMTAB.find(operand) != SYMTAB.end()) {
                     IC = SYMTAB[operand].address;
+                    cout << setw(4) << setfill('0') << IC << "\t(AD,03)\t(S," << operand << ")" << endl;
                 } else {
                     try {
                         IC = stoi(operand);
+                        cout << setw(4) << setfill('0') << IC << "\t(AD,03)\t(C," << operand << ")" << endl;
                     } catch (...) {
                         cout << "Invalid ORIGIN operand: " << operand << endl;
                     }
@@ -159,9 +169,11 @@ int main() {
                     int value;
                     try {
                         value = stoi(operand);
+                        cout << setw(4) << setfill('0') << IC << "\t(AD,04)\t(C," << operand << ")" << endl;
                     } catch (...) {
                         if (SYMTAB.find(operand) != SYMTAB.end()) {
                             value = SYMTAB[operand].address;
+                            cout << setw(4) << setfill('0') << IC << "\t(AD,04)\t(S," << operand << ")" << endl;
                         } else {
                             cout << "Invalid EQU operand: " << operand << endl;
                             continue;
@@ -171,28 +183,47 @@ int main() {
                 }
             }
         } else if (classType == "IS") {
+            string intermediate = "";
+            intermediate += "(" + classType + "," + to_string(opcodeVal) + ")";
             if (!operand.empty()) {
                 istringstream ops(operand);
                 string op;
+                vector<string> operands;
                 while (getline(ops, op, ',')) {
                     op = op.substr(op.find_first_not_of(" \t"));
-                    if (!op.empty() && op[0] == '=') {
-                        auto found = find_if(LITTAB.begin(), LITTAB.end(), [&](Literal& l) {
-                            return l.literal == op;
-                        });
-                        if (found == LITTAB.end()) {
-                            LITTAB.push_back(Literal(op, -1));
+                    if (!op.empty()) {
+                        if (op[0] == '=') {
+                            auto found = find_if(LITTAB.begin(), LITTAB.end(), [&](Literal& l) {
+                                return l.literal == op;
+                            });
+                            if (found == LITTAB.end()) {
+                                LITTAB.push_back(Literal(op, -1));
+                            }
+                            operands.push_back("(L," + to_string(LITTAB.size()-1) + ")");
+                        } else if (SYMTAB.find(op) != SYMTAB.end()) {
+                            operands.push_back("(S," + op + ")");
+                        } else {
+                            operands.push_back("(C," + op + ")");
                         }
                     }
                 }
+                intermediate += "\t";
+                for (size_t i = 0; i < operands.size(); ++i) {
+                    intermediate += operands[i];
+                    if (i < operands.size() - 1) intermediate += ",";
+                }
             }
+            cout << setw(4) << setfill('0') << IC << "\t" << intermediate << endl;
             IC++;
         } else if (classType == "DL") {
             if (opcode == "DC") {
+                cout << setw(4) << setfill('0') << IC << "\t(DL,01)\t(C," << operand << ")" << endl;
                 IC++;
             } else if (opcode == "DS") {
                 try {
-                    IC += stoi(operand);
+                    int size = stoi(operand);
+                    cout << setw(4) << setfill('0') << IC << "\t(DL,02)\t(C," << operand << ")" << endl;
+                    IC += size;
                 } catch (...) {
                     cout << "Invalid DS operand: " << operand << endl;
                 }
@@ -202,12 +233,11 @@ int main() {
 
     infile.close();
 
-    // Output tables
     cout << "\nInstruction Counter (IC): " << IC << endl;
 
     cout << "\nSYMTAB:\nSymbol\tAddress" << endl;
-    for (auto& [name, sym] : SYMTAB) {
-        cout << name << "\t" << sym.address << endl;
+    for (auto& s : SYMTAB) {
+        cout << s.first << "\t" << s.second.address << endl;
     }
 
     cout << "\nLITTAB:\nLiteral\tAddress" << endl;
