@@ -1,0 +1,317 @@
+**Tables Creation:-
+mysql> CREATE TABLE borrower (
+    ->     Roll_no INT PRIMARY KEY,
+    ->     Name VARCHAR(100),
+    ->     Date_of_Issue DATE,
+    ->     Name_of_book VARCHAR(200),
+    ->     Status CHAR(1) CHECK (Status IN ('I', 'R'))
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> CREATE TABLE fine (
+    ->     Roll_no INT,
+    ->     Fine_date DATE,
+    ->     Amt DECIMAL(8,2),
+    ->     CONSTRAINT fk_fine_borrower FOREIGN KEY (Roll_no) REFERENCES borrower(Roll_no)
+    -> );
+Query OK, 0 rows affected (0.18 sec)
+
+mysql> 
+
+
+-------------------------------------------------------------------------------------------------------
+
+**Program:-
+1. For accepting records from user:-
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE Issue_Book(
+	IN p_roll_no INT,
+	IN p_name VARCHAR(100),
+   	IN p_issue_date DATE,
+    	IN p_book_name VARCHAR(200)
+)
+
+BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	BEGIN
+		ROLLBACK;
+		SELECT 'Error occurred, transaction rolled back!!' AS message;
+	END;
+	
+	START TRANSACTION;
+	
+	INSERT INTO borrower(Roll_no, Name, Date_of_Issue, Name_of_book, Status) VALUES (p_roll_no, p_name, p_issue_date, p_book_name, 'I');
+	
+	COMMIT;
+	
+	SELECT 'Book issued successfully!!' AS message;
+END
+$$
+DELIMITER ;
+
+
+
+Function Calls->
+mysql> CALL issue_book(101, 'John Doe', '2025-07-01', 'Oracle Database Concepts');
++----------------------------+
+| message                    |
++----------------------------+
+| Book issued successfully!! |
++----------------------------+
+1 row in set (0.04 sec)
+
+Query OK, 1 row affected (0.04 sec)
+
+mysql> CALL issue_book(102, 'Jane Smith', '2025-07-02', 'Learning MySQL');
++----------------------------+
+| message                    |
++----------------------------+
+| Book issued successfully!! |
++----------------------------+
+1 row in set (0.03 sec)
+
+Query OK, 1 row affected (0.03 sec)
+
+mysql> CALL issue_book(103, 'Alice Johnson', '2025-07-03', 'Advanced SQL Programming');
++----------------------------+
+| message                    |
++----------------------------+
+| Book issued successfully!! |
++----------------------------+
+1 row in set (0.02 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+mysql> CALL Issue_Book(104, 'Michael Brown', '2025-07-04', 'SQL Performance Tuning');
++----------------------------+
+| message                    |
++----------------------------+
+| Book issued successfully!! |
++----------------------------+
+1 row in set (0.04 sec)
+
+Query OK, 1 row affected (0.04 sec)
+
+mysql> CALL Issue_Book(105, 'Emily Davis', '2025-07-05', 'Database Design Fundamentals');
++----------------------------+
+| message                    |
++----------------------------+
+| Book issued successfully!! |
++----------------------------+
+1 row in set (0.02 sec)
+
+Query OK, 1 row affected (0.02 sec)
+
+mysql> 
+
+mysql> SELECT * FROM borrower;
++---------+---------------+---------------+------------------------------+--------+
+| Roll_no | Name          | Date_of_Issue | Name_of_book                 | Status |
++---------+---------------+---------------+------------------------------+--------+
+|     101 | John Doe      | 2025-07-01    | Oracle Database Concepts     | I      |
+|     102 | Jane Smith    | 2025-07-02    | Learning MySQL               | I      |
+|     103 | Alice Johnson | 2025-07-03    | Advanced SQL Programming     | I      |
+|     104 | Michael Brown | 2025-07-04    | SQL Performance Tuning       | I      |
+|     105 | Emily Davis   | 2025-07-05    | Database Design Fundamentals | I      |
++---------+---------------+---------------+------------------------------+--------+
+5 rows in set (0.00 sec)
+
+mysql> 
+
+mysql> SELECT * FROM fine;
+Empty set (0.00 sec)
+
+mysql> 
+
+
+
+
+2. For checking if fine is applicable or not:-
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE Return_Book(
+	IN p_roll_no INT,
+	IN p_return_date DATE
+)
+
+BEGIN
+	DECLARE v_days INT;
+	DECLARE v_issue_date DATE;
+	DECLARE v_fine_amt DECIMAL(8, 2);
+	
+	SELECT Date_of_Issue INTO v_issue_date
+	FROM borrower
+	WHERE Roll_no=p_roll_no;
+	
+	SET v_days=DATEDIFF(p_return_date, v_issue_date);
+	SET v_fine_amt=0;
+	
+	IF v_days BETWEEN 15 AND 30 THEN
+		SET v_fine_amt=(v_days-14)*5;
+	ELSEIF v_days>30 THEN
+		SET v_fine_amt=((v_days-30)*50)+((v_days-14-(v_days-30))*5);
+	END IF;
+	
+	UPDATE borrower
+	SET Status='R'
+	WHERE Roll_no=p_roll_no AND Status='I';
+	
+	IF v_fine_amt>0 THEN
+		INSERT INTO fine(Roll_no, Fine_date, Amt)
+		VALUES (p_roll_no, p_return_date, v_fine_amt);
+	END IF;
+	
+	SELECT CONCAT('Return processed. Fine amount: Rs ', v_fine_amt) AS message;	
+END
+$$
+
+DELIMITER ;
+
+Function Calls->
+Case 1: No fine
+mysql> CALL Return_Book(101, '2025-07-10');
++----------------------------------------+
+| message                                |
++----------------------------------------+
+| Return processed. Fine amount: Rs 0.00 |
++----------------------------------------+
+1 row in set (0.00 sec)
+
+Query OK, 1 row affected (0.00 sec)
+
+mysql> SELECT * FROM fine;
+Empty set (0.00 sec)
+
+mysql>
+
+Case 2: Fine for days between 15 and 30
+mysql> CALL Return_Book(101, '2025-07-20');
++-----------------------------------------+
+| message                                 |
++-----------------------------------------+
+| Return processed. Fine amount: Rs 25.00 |
++-----------------------------------------+
+1 row in set (0.04 sec)
+
+Query OK, 2 rows affected (0.04 sec)
+
+mysql> SELECT * FROM fine;
++---------+------------+-------+
+| Roll_no | Fine_date  | Amt   |
++---------+------------+-------+
+|     101 | 2025-07-20 | 25.00 |
++---------+------------+-------+
+1 row in set (0.01 sec)
+
+mysql> 
+
+Case 3: Fine for days > 30
+mysql> CALL Return_Book(101, '2025-08-05');
++------------------------------------------+
+| message                                  |
++------------------------------------------+
+| Return processed. Fine amount: Rs 330.00 |
++------------------------------------------+
+1 row in set (0.04 sec)
+
+Query OK, 2 rows affected (0.04 sec)
+
+mysql> SELECT * FROM fine;
++---------+------------+--------+
+| Roll_no | Fine_date  | Amt    |
++---------+------------+--------+
+|     101 | 2025-07-20 |  25.00 |
+|     101 | 2025-08-05 | 330.00 |
++---------+------------+--------+
+2 rows in set (0.00 sec)
+
+mysql> 
+
+
+mysql> SELECT * FROM borrower;
++---------+---------------+---------------+------------------------------+--------+
+| Roll_no | Name          | Date_of_Issue | Name_of_book                 | Status |
++---------+---------------+---------------+------------------------------+--------+
+|     101 | John Doe      | 2025-07-01    | Oracle Database Concepts     | R      |
+|     102 | Jane Smith    | 2025-07-02    | Learning MySQL               | I      |
+|     103 | Alice Johnson | 2025-07-03    | Advanced SQL Programming     | I      |
+|     104 | Michael Brown | 2025-07-04    | SQL Performance Tuning       | I      |
+|     105 | Emily Davis   | 2025-07-05    | Database Design Fundamentals | I      |
++---------+---------------+---------------+------------------------------+--------+
+5 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+
+
+-------------------------------------------------------------------------------------------------------
+
+PART B:=
+Program for area of circle:-
+
+DELIMITER /
+
+CREATE OR REPLACE PROCEDURE areaCircle()
+
+BEGIN
+	DECLARE area DECIMAL(9, 5);
+	DECLARE pi DECIMAL(4, 3);
+	DECLARE radius INT;
+	
+	SET pi=3.14;
+	SET radius=5;
+	
+	WHILE radius<=9 DO
+		SET area=pi*radius*radius;
+		SELECT CONCAT('Area of circle with radius ', radius, ' is ', area) AS message;
+		SET radius=radius+1;
+	END WHILE;
+END
+/
+
+DELIMITER ;
+	
+
+
+
+mysql> CALL areaCircle();
++------------------------------------------+
+| message                                  |
++------------------------------------------+
+| Area of circle with radius 5 is 78.50000 |
++------------------------------------------+
+1 row in set (0.00 sec)
+
++-------------------------------------------+
+| message                                   |
++-------------------------------------------+
+| Area of circle with radius 6 is 113.04000 |
++-------------------------------------------+
+1 row in set (0.00 sec)
+
++-------------------------------------------+
+| message                                   |
++-------------------------------------------+
+| Area of circle with radius 7 is 153.86000 |
++-------------------------------------------+
+1 row in set (0.00 sec)
+
++-------------------------------------------+
+| message                                   |
++-------------------------------------------+
+| Area of circle with radius 8 is 200.96000 |
++-------------------------------------------+
+1 row in set (0.00 sec)
+
++-------------------------------------------+
+| message                                   |
++-------------------------------------------+
+| Area of circle with radius 9 is 254.34000 |
++-------------------------------------------+
+1 row in set (0.00 sec)
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+

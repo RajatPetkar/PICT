@@ -1,0 +1,23 @@
+--DECLARE v_empid N_Empld.emp_id%TYPE;
+	--DECLARE v_name N_Empld.emp_name%TYPE;
+	--DECLARE v_salary N_Empld.emp_salary%TYPE;
+	
+	
+	
+		SELECT CONCAT('EMP_NAME: ',v_name) AS message;
+		SELECT CONCAT('SALARY: ',v_salary) AS message;
+		
+		
+	DECLARE v_empid INT;
+	DECLARE v_name VARCHAR(100);
+	DECLARE v_salary DECIMAL(10,2);
+		
+		
+		
+		IF done THEN
+            		LEAVE read_loop;
+        	END IF;
+        	
+        	
+        	
+		FETCH emp_record INTO v_empid, v_name, v_salary;

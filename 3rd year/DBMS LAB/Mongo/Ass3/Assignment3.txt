@@ -1,0 +1,42 @@
+1. Map Phase – Processes each document and emits key-value pairs:-
+te31418_db> db.textdata.insertMany([
+... { _id: 1, content: "database systems are powerful" },
+... { _id: 2, content: "mongodb is a nosql database" },
+... { _id: 3, content: "nosql systems are scalable" }
+... ]);
+... mapFunction = function() {
+... var words = this.content.split(" ");
+... for (var i = 0; i < words.length; i++) emit(words[i], 1);
+... };
+... reduceFunction = function(key, values) { return Array.sum(values); };
+... db.textdata.mapReduce(mapFunction, reduceFunction, { out: "word_count_result" });
+DeprecationWarning: Collection.mapReduce() is deprecated. Use an aggregation instead.
+See https://mongodb.com/docs/manual/core/map-reduce for details.
+{
+  result: 'word_count_result',
+  timeMillis: 412,
+  counts: { input: 3, emit: 13, reduce: 4, output: 9 },
+  ok: 1
+}
+te31418_db> 
+
+==================================================================================================
+
+2. Reduce Phase – Aggregates all values for each key:-
+te31418_db> db.sales.insertMany([
+... { _id: 1, product: "Laptop", amount: 60000 },
+... { _id: 2, product: "Laptop", amount: 40000 },
+... { _id: 3, product: "Mouse", amount: 800 },
+... { _id: 4, product: "Mouse", amount: 1000 },
+... { _id: 5, product: "Chair", amount: 1500 }
+... ]);
+... mapSales = function() { emit(this.product, this.amount); };
+... reduceSales = function(key, values) { return Array.sum(values); };
+... db.sales.mapReduce(mapSales, reduceSales, { out: "total_sales" });
+{
+  result: 'total_sales',
+  timeMillis: 377,
+  counts: { input: 5, emit: 5, reduce: 2, output: 3 },
+  ok: 1
+}
+te31418_db> 

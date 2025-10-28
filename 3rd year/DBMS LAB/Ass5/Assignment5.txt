@@ -1,0 +1,231 @@
+1. Tables Creation:-
+mysql> CREATE TABLE Stud_Marks (Roll INT PRIMARY KEY, Name VARCHAR(50), Total_Marks INT NOT NULL);
+Query OK, 0 rows affected (0.15 sec)
+
+mysql> DESC Stud_Marks;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| Roll        | int(11)     | NO   | PRI | NULL    |       |
+| Name        | varchar(50) | NO   |     | NULL    |       |
+| Total_Marks | int(11)     | NO   |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> CREATE TABLE Result(Roll INT PRIMARY KEY NOT NULL, Name VARCHAR(20), Class VARCHAR(20));
+Query OK, 0 rows affected (0.18 sec)
+
+mysql> DESC Result;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| Roll  | int(11)     | NO   | PRI | NULL    |       |
+| Name  | varchar(20) | YES  |     | NULL    |       |
+| Class | varchar(20) | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+==============================================================================================================
+
+2. Data Insertion:-
+mysql> INSERT INTO Stud_Marks (Name, Total_Marks) VALUES ('John Doe', 950);
+Query OK, 1 row affected (0.04 sec)
+
+mysql> INSERT INTO Stud_Marks (Name, Total_Marks) VALUES ('Jane Smith', 1010);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> INSERT INTO Stud_Marks (Name, Total_Marks) VALUES ('Alice Brown', 870);
+Query OK, 1 row affected (0.08 sec)
+
+mysql> INSERT INTO Stud_Marks (Name, Total_Marks) VALUES ('Bob Johnson', 990);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> INSERT INTO Stud_Marks (Name, Total_Marks) VALUES ('Carol White', 820);
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FROM Stud_Marks;
++------+-------------+-------------+
+| Roll | Name        | Total_Marks |
++------+-------------+-------------+
+|  101 | John Doe    |         950 |
+|  102 | Jane Smith  |        1010 |
+|  103 | Alice Brown |         870 |
+|  104 | Bob Johnson |         990 |
+|  105 | Carol White |         820 |
++------+-------------+-------------+
+5 rows in set (0.00 sec)
+
+mysql>
+
+
+
+
+==============================================================================================================
+
+3. Using stored procedure:-
+**Program:-
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE proc_grade(
+	IN p_roll INT
+)
+BEGIN 
+	DECLARE v_name VARCHAR(50);
+	DECLARE v_marks INT;
+	DECLARE v_class VARCHAR(20);
+	
+	SELECT Name, Total_Marks INTO v_name, v_marks
+	FROM Stud_Marks
+	WHERE Roll = p_roll;
+	
+	SET v_class = CASE
+		WHEN v_marks BETWEEN 990 AND 1500 THEN 'Distinction'
+		WHEN v_marks BETWEEN 900 AND 989 THEN 'First Class'
+		WHEN v_marks BETWEEN 825 AND 899 THEN 'Higher Second Class'
+		ELSE 'No Category'
+	END;
+	
+	INSERT INTO Result VALUES(p_roll, v_name, v_class);
+	
+	SELECT 'Record inserted successfully!!' AS message;
+END$$
+DELIMITER ;
+
+**Function Call:-
+mysql> CALL proc_grade(101);
++--------------------------------+
+| message                        |
++--------------------------------+
+| Record inserted successfully!! |
++--------------------------------+
+1 row in set (0.02 sec)
+
+Query OK, 2 rows affected (0.02 sec)
+
+mysql> CALL proc_grade(102);
++--------------------------------+
+| message                        |
++--------------------------------+
+| Record inserted successfully!! |
++--------------------------------+
+1 row in set (0.14 sec)
+
+Query OK, 2 rows affected (0.14 sec)
+
+mysql> CALL proc_grade(103);
++--------------------------------+
+| message                        |
++--------------------------------+
+| Record inserted successfully!! |
++--------------------------------+
+1 row in set (0.08 sec)
+
+Query OK, 2 rows affected (0.08 sec)
+
+mysql> CALL proc_grade(104);
++--------------------------------+
+| message                        |
++--------------------------------+
+| Record inserted successfully!! |
++--------------------------------+
+1 row in set (0.02 sec)
+
+Query OK, 2 rows affected (0.02 sec)
+
+mysql> CALL proc_grade(105);
++--------------------------------+
+| message                        |
++--------------------------------+
+| Record inserted successfully!! |
++--------------------------------+
+1 row in set (0.04 sec)
+
+Query OK, 2 rows affected (0.04 sec)
+
+mysql> 
+
+**Result Table:-
+mysql> SELECT * FROM Result;
++------+-------------+---------------------+
+| Roll | Name        | Class               |
++------+-------------+---------------------+
+|  101 | John Doe    | First Class         |
+|  102 | Jane Smith  | Distinction         |
+|  103 | Alice Brown | Higher Second Class |
+|  104 | Bob Johnson | Distinction         |
+|  105 | Carol White | No Category         |
++------+-------------+---------------------+
+5 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+
+==============================================================================================================
+
+4. Using stored function:-
+**Program:-
+DELIMITER $$
+CREATE FUNCTION func_grade(p_roll INT) RETURNS VARCHAR(20)
+BEGIN
+	DECLARE v_marks INT;
+	DECLARE v_class VARCHAR(20);
+    
+	SELECT Total_Marks INTO v_marks
+	FROM Stud_Marks
+	WHERE Roll = p_roll;
+
+	SET v_class = CASE
+ 		WHEN v_marks BETWEEN 990 AND 1500 THEN 'Distinction'
+		WHEN v_marks BETWEEN 900 AND 989 THEN 'First Class'
+		WHEN v_marks BETWEEN 825 AND 899 THEN 'Higher Second Class'
+		ELSE 'No Category'
+	END;
+
+	RETURN v_class;
+END
+$$
+DELIMITER ;
+
+
+mysql> INSERT INTO Result (Roll, Name, Class) SELECT Roll, Name, func_grade(Roll) From Stud_Marks WHERE Roll=101;
+Query OK, 1 row affected (0.04 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Result (Roll, Name, Class) SELECT Roll, Name, func_grade(Roll) From Stud_Marks WHERE Roll=102;
+Query OK, 1 row affected (0.03 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Result (Roll, Name, Class) SELECT Roll, Name, func_grade(Roll) From Stud_Marks WHERE Roll=103;
+Query OK, 1 row affected (0.03 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Result (Roll, Name, Class) SELECT Roll, Name, func_grade(Roll) From Stud_Marks WHERE Roll=104;
+Query OK, 1 row affected (0.30 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Result (Roll, Name, Class) SELECT Roll, Name, func_grade(Roll) From Stud_Marks WHERE Roll=105;
+Query OK, 1 row affected (0.04 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Result;
++------+-------------+---------------------+
+| Roll | Name        | Class               |
++------+-------------+---------------------+
+|  101 | John Doe    | First Class         |
+|  102 | Jane Smith  | Distinction         |
+|  103 | Alice Brown | Higher Second Class |
+|  104 | Bob Johnson | Distinction         |
+|  105 | Carol White | No Category         |
++------+-------------+---------------------+
+5 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+

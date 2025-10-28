@@ -1,0 +1,266 @@
+******Source Code:-
+package mysql;
+
+import static java.lang.System.*;
+import java.util.*;
+import java.sql.*;
+
+public class CheckConnection {
+    // ========== INSERT ==========
+    private static void insertEmployee(Connection con, Scanner sc) {
+        try {
+            System.out.print("Enter Employee ID: ");
+            int id = sc.nextInt();
+            sc.nextLine(); // consume newline
+            System.out.print("Enter Employee Name: ");
+            String name = sc.nextLine();
+
+            String query = "INSERT INTO employees (id, name) VALUES (?, ?)";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+            ps.setString(2, name);
+
+            int rows = ps.executeUpdate();
+            System.out.println("✅ " + rows + " record(s) inserted successfully.");
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("❌ Error: Employee ID already exists.");
+        } catch (SQLException e) {
+            System.out.println("❌ Insert failed: " + e.getMessage());
+        }
+    }
+
+    // ========== UPDATE ==========
+    private static void updateEmployee(Connection con, Scanner sc) {
+        try {
+            System.out.print("Enter Employee ID to update: ");
+            int id = sc.nextInt();
+            sc.nextLine(); // consume newline
+            System.out.print("Enter new Employee Name: ");
+            String name = sc.nextLine();
+
+            String query = "UPDATE employees SET name = ? WHERE id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setString(1, name);
+            ps.setInt(2, id);
+
+            int rows = ps.executeUpdate();
+            if (rows > 0)
+                System.out.println("✅ Employee updated successfully.");
+            else
+                System.out.println("⚠️ Employee with ID " + id + " not found.");
+        } catch (SQLException e) {
+            System.out.println("❌ Update failed: " + e.getMessage());
+        }
+    }
+
+    // ========== DELETE ==========
+    private static void deleteEmployee(Connection con, Scanner sc) {
+        try {
+            // Check if table is empty
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM employees");
+            rs.next();
+            int count = rs.getInt(1);
+            if (count == 0) {
+                System.out.println("⚠️ Cannot delete — Employees table is empty.");
+                return;
+            }
+
+            System.out.print("Enter Employee ID to delete: ");
+            int id = sc.nextInt();
+
+            String query = "DELETE FROM employees WHERE id = ?";
+            PreparedStatement ps = con.prepareStatement(query);
+            ps.setInt(1, id);
+
+            int rows = ps.executeUpdate();
+            if (rows > 0)
+                System.out.println("✅ Employee deleted successfully.");
+            else
+                System.out.println("⚠️ Employee with ID " + id + " not found.");
+        } catch (SQLException e) {
+            System.out.println("❌ Delete failed: " + e.getMessage());
+        }
+    }
+
+    // ========== DISPLAY ==========
+    private static void displayEmployees(Connection con) {
+        try {
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("SELECT * FROM employees");
+
+            System.out.println("\n--- Employee Records ---");
+            boolean found = false;
+            while (rs.next()) {
+                found = true;
+                System.out.printf("ID: %-3d  Name: %s%n", rs.getInt("id"), rs.getString("name"));
+            }
+            if (!found)
+                System.out.println("⚠️ No records found.");
+        } catch (SQLException e) {
+            System.out.println("❌ Display failed: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        try {
+        	Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://10.10.8.119:3306/te31418_db", "te31418", "te31418");
+            Statement stmt = con.createStatement();
+            Scanner sc = new Scanner(in);
+
+            System.out.println("✅ Connected to MySQL Database: te31418_db");
+
+            while (true) {
+                System.out.println("\n=== Employee Management Menu ===");
+                System.out.println("1. Insert Employee");
+                System.out.println("2. Update Employee");
+                System.out.println("3. Delete Employee");
+                System.out.println("4. Display All Employees");
+                System.out.println("5. Exit");
+                System.out.print("Enter your choice: ");
+                int choice = sc.nextInt();
+                sc.nextLine();
+
+                switch (choice) {
+                    case 1 -> insertEmployee(con, sc);
+                    case 2 -> updateEmployee(con, sc);
+                    case 3 -> deleteEmployee(con, sc);
+                    case 4 -> displayEmployees(con);
+                    case 5 -> {
+                        System.out.println("👋 Exiting program...");
+                        return;
+                    }
+                    default -> System.out.println("❌ Invalid choice! Please try again.");
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+
+
+========================================================================================================================
+
+******OUTPUT:-
+1) Eclipse Terminal:-
+✅ Connected to MySQL Database: te31418_db
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 1
+Enter Employee ID: 1
+Enter Employee Name: abc
+✅ 1 record(s) inserted successfully.
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 1
+Enter Employee ID: 5
+Enter Employee Name: ert
+✅ 1 record(s) inserted successfully.
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 1
+Enter Employee ID: 6
+Enter Employee Name: hjk
+✅ 1 record(s) inserted successfully.
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 4
+
+--- Employee Records ---
+ID: 1    Name: abc
+ID: 5    Name: ert
+ID: 6    Name: hjk
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 2
+Enter Employee ID to update: 5
+Enter new Employee Name: vbn
+✅ Employee updated successfully.
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 4
+
+--- Employee Records ---
+ID: 1    Name: abc
+ID: 5    Name: vbn
+ID: 6    Name: hjk
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 3
+Enter Employee ID to delete: 1
+✅ Employee deleted successfully.
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 4
+
+--- Employee Records ---
+ID: 5    Name: vbn
+ID: 6    Name: hjk
+
+=== Employee Management Menu ===
+1. Insert Employee
+2. Update Employee
+3. Delete Employee
+4. Display All Employees
+5. Exit
+Enter your choice: 5
+👋 Exiting program...
+
+
+2) MySQL Terminal:-
+mysql> CREATE TABLE employees(id INT PRIMARY KEY, name VARCHAR(20));
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> SELECT * FROM employees;
++----+------+
+| id | name |
++----+------+
+|  5 | vbn  |
+|  6 | hjk  |
++----+------+
+2 rows in set (0.00 sec)
+
+mysql> 
+

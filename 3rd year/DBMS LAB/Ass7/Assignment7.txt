@@ -1,0 +1,276 @@
+1. Tables Creation:-
+mysql> CREATE TABLE Library(
+    -> book_id INT PRIMARY KEY,
+    -> title VARCHAR(50) NOT NULL,
+    -> author VARCHAR(20) NOT NULL,
+    -> published_year DATE NOT NULL
+    -> );
+Query OK, 0 rows affected (0.16 sec)
+
+mysql> DESC Library;
++----------------+-------------+------+-----+---------+-------+
+| Field          | Type        | Null | Key | Default | Extra |
++----------------+-------------+------+-----+---------+-------+
+| book_id        | int(11)     | NO   | PRI | NULL    |       |
+| title          | varchar(50) | NO   |     | NULL    |       |
+| author         | varchar(20) | NO   |     | NULL    |       |
+| published_year | date        | NO   |     | NULL    |       |
++----------------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> 
+mysql> 
+mysql> 
+mysql> 
+mysql> CREATE TABLE Library_Audit(
+    -> audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    -> book_id INT,
+    -> title VARCHAR(50),
+    -> author VARCHAR(20),
+    -> published_year DATE,
+    -> operation_type VARCHAR(20) NOT NULL,
+    -> operation_time TIMESTAMP NOT NULL
+    -> );
+Query OK, 0 rows affected (0.21 sec)
+
+mysql> DESC Library_Audit;
++----------------+-------------+------+-----+---------------------+-------------------------------+
+| Field          | Type        | Null | Key | Default             | Extra                         |
++----------------+-------------+------+-----+---------------------+-------------------------------+
+| audit_id       | int(11)     | NO   | PRI | NULL                | auto_increment                |
+| book_id        | int(11)     | YES  |     | NULL                |                               |
+| title          | varchar(50) | YES  |     | NULL                |                               |
+| author         | varchar(20) | YES  |     | NULL                |                               |
+| published_year | date        | YES  |     | NULL                |                               |
+| operation_type | varchar(20) | NO   |     | NULL                |                               |
+| operation_time | timestamp   | NO   |     | current_timestamp() | on update current_timestamp() |
++----------------+-------------+------+-----+---------------------+-------------------------------+
+7 rows in set (0.21 sec)
+
+mysql> 
+
+======================================================================================================================
+
+2. Some Records Insertion into Library Table:-
+mysql> INSERT INTO Library VALUES (101, 'The Art of Computer Programming', 'Donald Ervin Knuth', '1968-10-24');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> INSERT INTO Library VALUES (102, 'The C Programming Language', 'Dennis M. Ritchie', '1978-5-17');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> INSERT INTO Library VALUES (103, 'Introduction to Algorithms', 'Thomas H. Cormen', '1985-4-4');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> INSERT INTO Library VALUES (104, 'Structure and Interpretation of Computer Programs', 'Harold Abelson', '1990-11-29');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FROM Library;
++---------+---------------------------------------------------+--------------------+----------------+
+| book_id | title                                             | author             | published_year |
++---------+---------------------------------------------------+--------------------+----------------+
+|     101 | The Art of Computer Programming                   | Donald Ervin Knuth | 1968-10-24     |
+|     102 | The C Programming Language                        | Dennis M. Ritchie  | 1978-05-17     |
+|     103 | Introduction to Algorithms                        | Thomas H. Cormen   | 1985-04-04     |
+|     104 | Structure and Interpretation of Computer Programs | Harold Abelson     | 1990-11-29     |
++---------+---------------------------------------------------+--------------------+----------------+
+4 rows in set (0.00 sec)
+
+mysql>
+
+======================================================================================================================
+
+3. Programs:-
+1) Trigger for BEFORE UPDATION (ROW LEVEL):-
+DELIMITER $$
+
+CREATE OR REPLACE TRIGGER before_update
+BEFORE UPDATE ON Library
+FOR EACH ROW
+BEGIN
+	INSERT INTO Library_Audit(
+	book_id, title, author, published_year, operation_type, operation_time
+	)VALUES(
+	OLD.book_id, OLD.title, OLD.author, OLD.published_year, "UPDATE_BEFORE", NOW()
+	);
+END $$
+
+DELIMITER ;
+
+
+2) Trigger for BEFORE DELETION (ROW LEVEL):-
+DELIMITER $$
+
+CREATE OR REPLACE TRIGGER before_delete
+BEFORE DELETE ON Library
+FOR EACH ROW
+BEGIN
+	INSERT INTO Library_Audit(
+	book_id, title, author, published_year, operation_type, operation_time
+	)VALUES(
+	OLD.book_id, OLD.title, OLD.author, OLD.published_year, "DELETE_BEFORE", NOW()
+	);
+END $$
+
+DELIMITER ;
+
+
+3) Trigger for UPDATION (STATEMENT LEVEL):-
+DELIMITER $$
+
+CREATE OR REPLACE TRIGGER after_update
+AFTER UPDATE ON Library
+FOR EACH ROW
+BEGIN
+	SET @log_var = 0;
+
+	IF @log_var=0 THEN
+		INSERT INTO Library_Audit(
+		book_id, title, author, published_year, operation_type, operation_time
+		)VALUES(
+		OLD.book_id, OLD.title, OLD.author, OLD.published_year, "UPDATE_STMT_TRIGGER", NOW()
+		);
+		
+		SET @log_var=1;
+	END IF;
+END $$
+
+DELIMITER ;
+
+
+4) Trigger for DELETION (STATEMENT LEVEL):-
+DELIMITER $$
+
+CREATE OR REPLACE TRIGGER after_delete
+AFTER DELETE ON Library
+FOR EACH ROW
+BEGIN
+	SET @log_var = 0;
+
+	IF @log_var=0 THEN
+		INSERT INTO Library_Audit(
+		book_id, title, author, published_year, operation_type, operation_time
+		)VALUES(
+		OLD.book_id, OLD.title, OLD.author, OLD.published_year, "DELETE_STMT_TRIGGER", NOW()
+		);
+		
+		SET @log_var=1;
+	END IF;
+END $$
+
+DELIMITER ;
+
+====================================================================================================================================
+
+4. Output:-
+A) ROW LEVEL:-
+mysql> UPDATE Library
+    -> SET author = 'Donald E. Knuth'
+    -> WHERE book_id = 101;
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> UPDATE Library
+    -> SET published_year = '2009-07-31'
+    -> WHERE book_id = 103;
+Query OK, 1 row affected (0.03 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM Library_Audit;
++----------+---------+---------------------------------+--------------------+----------------+----------------+---------------------+
+| audit_id | book_id | title                           | author             | published_year | operation_type | operation_time      |
++----------+---------+---------------------------------+--------------------+----------------+----------------+---------------------+
+|        1 |     101 | The Art of Computer Programming | Donald Ervin Knuth | 1968-10-24     | UPDATE_BEFORE  | 2025-09-22 10:38:35 |
+|        2 |     103 | Introduction to Algorithms      | Thomas H. Cormen   | 1985-04-04     | UPDATE_BEFORE  | 2025-09-22 10:38:40 |
++----------+---------+---------------------------------+--------------------+----------------+----------------+---------------------+
+2 rows in set (0.00 sec)
+
+mysql> DELETE FROM Library
+    -> WHERE book_id = 102;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> DELETE FROM Library
+    -> WHERE book_id = 104;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> SELECT * FROM Library_Audit;
++----------+---------+---------------------------------------------------+--------------------+----------------+----------------+---------------------+
+| audit_id | book_id | title                                             | author             | published_year | operation_type | operation_time      |
++----------+---------+---------------------------------------------------+--------------------+----------------+----------------+---------------------+
+|        1 |     101 | The Art of Computer Programming                   | Donald Ervin Knuth | 1968-10-24     | UPDATE_BEFORE  | 2025-09-22 10:38:35 |
+|        2 |     103 | Introduction to Algorithms                        | Thomas H. Cormen   | 1985-04-04     | UPDATE_BEFORE  | 2025-09-22 10:38:40 |
+|        3 |     102 | The C Programming Language                        | Dennis M. Ritchie  | 1978-05-17     | DELETE_BEFORE  | 2025-09-22 10:41:14 |
+|        4 |     104 | Structure and Interpretation of Computer Programs | Harold Abelson     | 1990-11-29     | DELETE_BEFORE  | 2025-09-22 10:41:18 |
++----------+---------+---------------------------------------------------+--------------------+----------------+----------------+---------------------+
+4 rows in set (0.01 sec)
+
+mysql>
+
+
+
+
+B) Statement Level:-
+mysql> SELECT * FROM Library;
++---------+---------------------------------------------------+--------------------+----------------+
+| book_id | title                                             | author             | published_year |
++---------+---------------------------------------------------+--------------------+----------------+
+|     101 | The Art of Computer Programming                   | Donald Ervin Knuth | 1968-10-24     |
+|     102 | The C Programming Language                        | Dennis M. Ritchie  | 1978-05-17     |
+|     103 | Introduction to Algorithms                        | Thomas H. Cormen   | 1985-04-04     |
+|     104 | Structure and Interpretation of Computer Programs | Harold Abelson     | 1990-11-29     |
++---------+---------------------------------------------------+--------------------+----------------+
+4 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Library_Audit;
+Empty set (0.00 sec)
+
+mysql> 
+mysql> SET @log_var = 0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> UPDATE Library
+    -> SET author = 'Donald Ervin Knuth'
+    -> WHERE book_id = 101;
+Query OK, 1 row affected (0.04 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT * FROM Library_Audit;
++----------+---------+---------------------------------+-----------------+----------------+---------------------+---------------------+
+| audit_id | book_id | title                           | author          | published_year | operation_type      | operation_time      |
++----------+---------+---------------------------------+-----------------+----------------+---------------------+---------------------+
+|        1 |     101 | The Art of Computer Programming | Donald E. Knuth | 1968-10-24     | UPDATE_STMT_TRIGGER | 2025-09-26 09:31:17 |
++----------+---------+---------------------------------+-----------------+----------------+---------------------+---------------------+
+1 row in set (0.36 sec)
+
+mysql> 
+
+mysql> SET @log_var=0;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> 
+mysql> 
+mysql> DELETE FROM Library
+    -> WHERE book_id = 102;
+Query OK, 1 row affected (0.02 sec)
+
+mysql> 
+mysql> 
+mysql> SELECT * FROM Library_Audit;
++----------+---------+---------------------------------+-------------------+----------------+---------------------+---------------------+
+| audit_id | book_id | title                           | author            | published_year | operation_type      | operation_time      |
++----------+---------+---------------------------------+-------------------+----------------+---------------------+---------------------+
+|        1 |     101 | The Art of Computer Programming | Donald E. Knuth   | 1968-10-24     | UPDATE_STMT_TRIGGER | 2025-09-26 09:31:17 |
+|        2 |     102 | The C Programming Language      | Dennis M. Ritchie | 1978-05-17     | DELETE_STMT_TRIGGER | 2025-09-26 09:32:53 |
++----------+---------+---------------------------------+-------------------+----------------+---------------------+---------------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT * FROM Library;
++---------+---------------------------------------------------+--------------------+----------------+
+| book_id | title                                             | author             | published_year |
++---------+---------------------------------------------------+--------------------+----------------+
+|     101 | The Art of Computer Programming                   | Donald Ervin Knuth | 1968-10-24     |
+|     103 | Introduction to Algorithms                        | Thomas H. Cormen   | 1985-04-04     |
+|     104 | Structure and Interpretation of Computer Programs | Harold Abelson     | 1990-11-29     |
++---------+---------------------------------------------------+--------------------+----------------+
+3 rows in set (0.00 sec)
+
+

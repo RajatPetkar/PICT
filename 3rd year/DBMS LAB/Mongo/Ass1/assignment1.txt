@@ -1,0 +1,178 @@
+1. Creation of Student Schema:-
+-- In MongoDB, we don't have traditional "tables" like in relational databases. Instead, we have collections.
+-- You can insert a document to represent a "students" with the fields _id, name, age, department and marks.
+
+te31418_db> db.students.insertOne({
+... _id: 1,
+... name: "Rahul",
+... age: 21,
+... department: "Computer",
+... marks: 85
+... })
+{ acknowledged: true, insertedId: 1 }
+te31418_db> 
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+2. Inserting Multiple Records:-
+te31418_db> db.students.insertMany([
+... {_id: 2, name: "Sneha", age: 20, department: "IT", marks: 75},
+... {_id: 3, name: "Amit", age: 22, department: "Computer", marks: 60},
+... {_id: 4, name: "Meera", age: 23, department: "ENTC", marks: 90}
+... ])
+{ acknowledged: true, insertedIds: { '0': 2, '1': 3, '2': 4 } }
+te31418_db> 
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+3. Save Record : Using updateOne() with {upsert: true} -> Inserts if _id is not present:-
+te31418_db> db.students.updateOne(
+... {_id: 5},
+... {$set: {name: "Riya", age: 19, department: "Civil", marks: 70}},
+... {upsert: true}
+... )
+{
+  acknowledged: true,
+  insertedId: 5,
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 1
+}
+te31418_db> 
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+4. Read/Query with Logical Operators : Using find():-
+
+A) $and -> students age > 20 AND marks >= 70:-
+te31418_db> db.students.find(
+... {$and: [
+... {age: {$gt: 20}},
+... {marks: {$gte: 70}}
+... ]})
+[
+  { _id: 1, name: 'Rahul', age: 21, department: 'Computer', marks: 85 },
+  { _id: 4, name: 'Meera', age: 23, department: 'ENTC', marks: 90 }
+]
+te31418_db> 
+
+
+B) $or -> students from IT OR marks >= 80:-
+te31418_db> db.students.find(
+... {$or: [
+... {department: "IT"},
+... {marks: {$gte: 80}}
+... ]})
+[
+  { _id: 1, name: 'Rahul', age: 21, department: 'Computer', marks: 85 },
+  { _id: 2, name: 'Sneha', age: 20, department: 'IT', marks: 75 },
+  { _id: 4, name: 'Meera', age: 23, department: 'ENTC', marks: 90 }
+]
+te31418_db> 
+
+
+C) $not -> students NOT from Computer Department:-
+te31418_db> db.students.find(
+... {department: {
+... $not: {$eq: "Computer"}
+... }})
+[
+  { _id: 2, name: 'Sneha', age: 20, department: 'IT', marks: 75 },
+  { _id: 4, name: 'Meera', age: 23, department: 'ENTC', marks: 90 },
+  { _id: 5, age: 19, department: 'Civil', marks: 70, name: 'Riya' }
+]
+te31418_db> 
+
+
+D) $nor -> neither IT dept NOR marks < 60:-
+te31418_db> db.students.find(
+... {$nor: [
+... {department: "IT"},
+... {marks: {$lt: 60}}
+... ]})
+[
+  { _id: 1, name: 'Rahul', age: 21, department: 'Computer', marks: 85 },
+  { _id: 3, name: 'Amit', age: 22, department: 'Computer', marks: 60 },
+  { _id: 4, name: 'Meera', age: 23, department: 'ENTC', marks: 90 },
+  { _id: 5, age: 19, department: 'Civil', marks: 70, name: 'Riya' }
+]
+te31418_db>
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+5. Update Records:-
+
+A) Using updateOne():-
+te31418_db> db.students.updateOne(
+... {_id: 1},
+... {$set: {marks: 90}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 0,
+  modifiedCount: 0,
+  upsertedCount: 0
+}
+te31418_db>
+
+
+B) Using updateMany():-
+te31418_db> db.students.updateMany(
+... {department: "Computer"},
+... {$inc: {marks: 5}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 2,
+  modifiedCount: 2,
+  upsertedCount: 0
+}
+te31418_db> 
+
+
+C) Output:-
+te31418_db> db.students.find()
+[
+  { _id: 1, name: 'Rahul', age: 21, department: 'Computer', marks: 90 },
+  { _id: 2, name: 'Sneha', age: 20, department: 'IT', marks: 75 },
+  { _id: 3, name: 'Amit', age: 22, department: 'Computer', marks: 65 },
+  { _id: 4, name: 'Meera', age: 23, department: 'ENTC', marks: 90 },
+  { _id: 5, age: 19, department: 'Civil', marks: 70, name: 'Riya' }
+]
+te31418_db> 
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+6. Deletion of Records:-
+
+A) Using deleteOne():-
+te31418_db> db.students.deleteOne(
+... {_id: 3}
+... )
+{ acknowledged: true, deletedCount: 1 }
+
+te31418_db> db.students.find()
+[
+  { _id: 1, name: 'Rahul', age: 21, department: 'Computer', marks: 90 },
+  { _id: 2, name: 'Sneha', age: 20, department: 'IT', marks: 75 },
+  { _id: 4, name: 'Meera', age: 23, department: 'ENTC', marks: 90 },
+  { _id: 5, age: 19, department: 'Civil', marks: 70, name: 'Riya' }
+]
+te31418_db> 
+
+
+B) Using deleteMany():-
+te31418_db> db.students.deleteMany(
+... {department: "IT"}
+... )
+{ acknowledged: true, deletedCount: 1 }
+
+te31418_db> db.students.find()
+[
+  { _id: 1, name: 'Rahul', age: 21, department: 'Computer', marks: 90 },
+  { _id: 4, name: 'Meera', age: 23, department: 'ENTC', marks: 90 },
+  { _id: 5, age: 19, department: 'Civil', marks: 70, name: 'Riya' }
+]
+te31418_db> 
+
+

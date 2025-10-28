@@ -1,0 +1,257 @@
+******Source Code:-
+package mongodb;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+import org.bson.Document;
+import org.bson.conversions.Bson;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Updates.set;
+
+import java.util.Scanner;
+
+public class MongodbConnectivity {
+
+    public static void main(String[] args) {
+        String connectionString = "mongodb://te31141:te31141@10.10.8.119:27017/?authSource=te31141_db";
+        
+        // Connect to MongoDB
+        MongoClient mongoClient = MongoClients.create(connectionString);
+        MongoDatabase database = mongoClient.getDatabase("te31141_db");
+        MongoCollection<Document> collection = database.getCollection("student");
+        
+        System.out.println("Database Connected Successfully!!");
+
+        Scanner scanner = new Scanner(System.in);
+        boolean running = true;
+
+        // Main menu loop
+        while (running) {
+            System.out.println("\nChoose an option:");
+            System.out.println("1. Insert student");
+            System.out.println("2. Delete student by name");
+            System.out.println("3. Update student marks by name");
+            System.out.println("4. Exit");
+            System.out.print("Enter choice (1-4): ");
+            
+            // Handle invalid input
+            int choice = -1;
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+                scanner.nextLine(); // consume newline
+            } else {
+                System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                scanner.nextLine(); // consume invalid input
+                continue; // skip the current iteration and ask for input again
+            }
+
+            switch (choice) {
+                case 1:
+                    // Insert a student
+                    System.out.print("Enter name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter age: ");
+                    int age = scanner.nextInt();
+                    System.out.print("Enter marks: ");
+                    int marks = scanner.nextInt();
+                    scanner.nextLine(); // consume newline
+                    
+                    Document doc = new Document("name", name)
+                            .append("age", age)
+                            .append("marks", marks);
+                    collection.insertOne(doc);
+                    System.out.println("Student inserted.");
+                    break;
+
+                case 2:
+                    // Delete student by name
+                    System.out.print("Enter name to delete: ");
+                    String delName = scanner.nextLine();
+                    DeleteResult deleteResult = collection.deleteOne(eq("name", delName));
+                    if (deleteResult.getDeletedCount() > 0) {
+                        System.out.println("Student deleted successfully.");
+                    } else {
+                        System.out.println("No student found with that name.");
+                    }
+                    break;
+
+                case 3:
+                    // Update student marks by name
+                    System.out.print("Enter name to update marks: ");
+                    String updateName = scanner.nextLine();
+                    System.out.print("Enter new marks: ");
+                    int newMarks = scanner.nextInt();
+                    scanner.nextLine(); // consume newline
+                    
+                    Bson filter = eq("name", updateName);
+                    Bson updateOperation = set("marks", newMarks);
+                    UpdateResult updateResult = collection.updateOne(filter, updateOperation);
+                    if (updateResult.getMatchedCount() > 0) {
+                        System.out.println("Student marks updated.");
+                    } else {
+                        System.out.println("No student found with that name.");
+                    }
+                    break;
+
+                case 4:
+                    running = false;
+                    System.out.println("Exiting program.");
+                    break;
+
+                default:
+                    System.out.println("Invalid choice. Please select between 1 and 4.");
+            }
+
+            // Display all students after each operation, except exit
+            if (running) {
+                System.out.println("\nAll students in collection:");
+                for (Document d : collection.find()) {
+                    System.out.println(d.toJson());
+                }
+            }
+        }
+
+        // Close resources
+        scanner.close();
+        mongoClient.close();
+    }
+}
+
+
+========================================================================================================================
+
+
+******Output:-
+Oct 17, 2025 9:45:42 AM com.mongodb.diagnostics.logging.JULLogger log
+INFO: Cluster created with settings {hosts=[10.10.8.119:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+Database Connected Successfully!!
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): Oct 17, 2025 9:45:42 AM com.mongodb.diagnostics.logging.JULLogger log
+INFO: Opened connection [connectionId{localValue:1, serverValue:453}] to 10.10.8.119:27017
+Oct 17, 2025 9:45:42 AM com.mongodb.diagnostics.logging.JULLogger log
+INFO: Monitor thread successfully connected to server with description ServerDescription{address=10.10.8.119:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[4, 2, 13]}, minWireVersion=0, maxWireVersion=8, maxDocumentSize=16777216, logicalSessionTimeoutMinutes=30, roundTripTimeNanos=2565785}
+1
+Enter name: Yash
+Enter age: 91
+Enter marks: 19
+Oct 17, 2025 9:46:17 AM com.mongodb.diagnostics.logging.JULLogger log
+INFO: Opened connection [connectionId{localValue:2, serverValue:456}] to 10.10.8.119:27017
+Student inserted.
+
+All students in collection:
+{"_id": {"$oid": "68f1c311acf8b95d75964e79"}, "name": "Yash", "age": 91, "marks": 19}
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): 1
+Enter name: Omkar
+Enter age: 19
+Enter marks: 91
+Student inserted.
+
+All students in collection:
+{"_id": {"$oid": "68f1c311acf8b95d75964e79"}, "name": "Yash", "age": 91, "marks": 19}
+{"_id": {"$oid": "68f1c322acf8b95d75964e7a"}, "name": "Omkar", "age": 19, "marks": 91}
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): 3
+Enter name to update marks: Manthan
+Enter new marks: 89
+No student found with that name.
+
+All students in collection:
+{"_id": {"$oid": "68f1c311acf8b95d75964e79"}, "name": "Yash", "age": 91, "marks": 19}
+{"_id": {"$oid": "68f1c322acf8b95d75964e7a"}, "name": "Omkar", "age": 19, "marks": 91}
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): 1
+Enter name: Manthan
+Enter age: 20
+Enter marks: 99
+Student inserted.
+
+All students in collection:
+{"_id": {"$oid": "68f1c311acf8b95d75964e79"}, "name": "Yash", "age": 91, "marks": 19}
+{"_id": {"$oid": "68f1c322acf8b95d75964e7a"}, "name": "Omkar", "age": 19, "marks": 91}
+{"_id": {"$oid": "68f1c34aacf8b95d75964e7b"}, "name": "Manthan", "age": 20, "marks": 99}
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): 3
+Enter name to update marks: Yash
+Enter new marks: 9
+Student marks updated.
+
+All students in collection:
+{"_id": {"$oid": "68f1c311acf8b95d75964e79"}, "name": "Yash", "age": 91, "marks": 9}
+{"_id": {"$oid": "68f1c322acf8b95d75964e7a"}, "name": "Omkar", "age": 19, "marks": 91}
+{"_id": {"$oid": "68f1c34aacf8b95d75964e7b"}, "name": "Manthan", "age": 20, "marks": 99}
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): 2
+Enter name to delete: Omkar
+Student deleted successfully.
+
+All students in collection:
+{"_id": {"$oid": "68f1c311acf8b95d75964e79"}, "name": "Yash", "age": 91, "marks": 9}
+{"_id": {"$oid": "68f1c34aacf8b95d75964e7b"}, "name": "Manthan", "age": 20, "marks": 99}
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): 2
+Enter name to delete: Yash
+Student deleted successfully.
+
+All students in collection:
+{"_id": {"$oid": "68f1c34aacf8b95d75964e7b"}, "name": "Manthan", "age": 20, "marks": 99}
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): 2
+Enter name to delete: Manthan
+Student deleted successfully.
+
+All students in collection:
+
+Choose an option:
+1. Insert student
+2. Delete student by name
+3. Update student marks by name
+4. Exit
+Enter choice (1-4): 4
+Exiting program.
+
+

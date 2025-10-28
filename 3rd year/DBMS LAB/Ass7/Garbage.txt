@@ -1,0 +1,313 @@
+Sure! Below is a well-formatted example of **all four types of triggers** on a `Library` table to track updates and deletes by inserting old records into a `Library_Audit` table.
+
+---
+
+### Assumptions:
+
+* `Library` table has columns: `book_id`, `title`, `author`, `published_year`
+* `Library_Audit` table has columns: `audit_id` (auto-increment), `book_id`, `title`, `author`, `published_year`, `operation_type` (VARCHAR), `operation_time` (TIMESTAMP)
+
+---
+
+### 1. **Before Row-Level Update Trigger**
+
+This triggers before each row update, saves the old row in audit with operation\_type = 'UPDATE\_BEFORE'
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_before_update_library
+BEFORE UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit(book_id, title, author, published_year, operation_type, operation_time)
+    VALUES (OLD.book_id, OLD.title, OLD.author, OLD.published_year, 'UPDATE_BEFORE', NOW());
+END $$
+
+DELIMITER ;
+```
+
+---
+
+### 2. **After Row-Level Update Trigger**
+
+This triggers after each row update, can be used for logging or additional actions (optional here)
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_after_update_library
+AFTER UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    -- Example: You can add some logging or notification here if needed
+    -- No audit insert needed here as we already captured OLD values before update
+END $$
+
+DELIMITER ;
+```
+
+---
+
+### 3. **Before Row-Level Delete Trigger**
+
+This triggers before each row delete, saves the old row in audit with operation\_type = 'DELETE\_BEFORE'
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_before_delete_library
+BEFORE DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit(book_id, title, author, published_year, operation_type, operation_time)
+    VALUES (OLD.book_id, OLD.title, OLD.author, OLD.published_year, 'DELETE_BEFORE', NOW());
+END $$
+
+DELIMITER ;
+```
+
+---
+
+### 4. **After Row-Level Delete Trigger**
+
+After delete trigger can be used to log or perform cleanups (optional)
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_after_delete_library
+AFTER DELETE ON Library
+FOR EACH ROW
+BEGIN
+    -- Optional: additional logic after delete
+END $$
+
+DELIMITER ;
+```
+
+---
+
+### 5. **Statement Level Triggers (Before / After Update or Delete)**
+
+If you want a statement-level trigger (fires once per statement, not per row), just remove `FOR EACH ROW`.
+
+Example — **Before Update Statement Level:**
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_before_update_library_stmt
+BEFORE UPDATE ON Library
+BEGIN
+    -- You cannot access OLD or NEW here since no FOR EACH ROW, so just log statement-level info
+    INSERT INTO Library_Audit(book_id, title, author, published_year, operation_type, operation_time)
+    VALUES (NULL, NULL, NULL, NULL, 'STATEMENT_UPDATE', NOW());
+END $$
+
+DELIMITER ;
+```
+
+Similarly for **Before Delete Statement Level**:
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_before_delete_library_stmt
+BEFORE DELETE ON Library
+BEGIN
+    INSERT INTO Library_Audit(book_id, title, author, published_year, operation_type, operation_time)
+    VALUES (NULL, NULL, NULL, NULL, 'STATEMENT_DELETE', NOW());
+END $$
+
+DELIMITER ;
+```
+
+---
+
+## Summary:
+
+* Row-level triggers (`FOR EACH ROW`) capture detailed old values.
+* Statement-level triggers fire once per statement, without row context.
+* Before triggers capture old data before changes.
+* After triggers run after the DML (optional for this audit scenario).
+
+---
+
+If you want a **single combined trigger** or some extra logic, just ask!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Got it! Since you want a **single combined trigger** to track both **UPDATE** and **DELETE** operations on the `Library` table and log the **old values** into `Library_Audit`, here’s a clean, well-formatted **row-level trigger** that handles both operations **before** they happen (so it can capture old values).
+
+---
+
+### Combined Trigger: Before UPDATE or DELETE on `Library`
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_before_update_delete_library
+BEFORE UPDATE OR DELETE ON Library
+FOR EACH ROW
+BEGIN
+    DECLARE v_operation_type VARCHAR(20);
+
+    IF (OLD.book_id IS NOT NULL) THEN
+        -- Determine operation type based on whether it's an update or delete
+        IF (OLD.book_id = OLD.book_id AND NEW.book_id IS NOT NULL) THEN
+            SET v_operation_type = 'UPDATE_BEFORE';
+        ELSE
+            SET v_operation_type = 'DELETE_BEFORE';
+        END IF;
+    END IF;
+
+    -- Insert the old record into audit table
+    INSERT INTO Library_Audit (
+        book_id, title, author, published_year, operation_type, operation_time
+    ) VALUES (
+        OLD.book_id, OLD.title, OLD.author, OLD.published_year, v_operation_type, NOW()
+    );
+END $$
+
+DELIMITER ;
+```
+
+---
+
+### Explanation:
+
+* **Trigger type**: `BEFORE UPDATE OR DELETE`
+* **Row-level**: fires for each affected row
+* Uses the special `OLD` row variable (available in both update & delete triggers) to capture old data.
+* Checks operation type:
+
+  * If `NEW` exists (not null), it’s an **UPDATE** (before the update)
+  * If `NEW` is null (in DELETE), it’s a **DELETE**
+* Inserts old record into `Library_Audit` with operation type accordingly.
+* Timestamp uses `NOW()` for audit time.
+
+---
+
+### Important:
+
+* MySQL does **not** allow referencing `NEW` in DELETE triggers (it's only available for UPDATE and INSERT). So, to distinguish between UPDATE and DELETE in a combined trigger, you need to use a trick because:
+
+  * `NEW` is accessible **only** in `INSERT` and `UPDATE` triggers.
+  * In a DELETE trigger, `NEW` is not available, so `NEW` would cause an error.
+
+**To fix this**, split the logic in the trigger like this:
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_before_update_delete_library
+BEFORE UPDATE OR DELETE ON Library
+FOR EACH ROW
+BEGIN
+    DECLARE v_operation_type VARCHAR(20);
+
+    IF (OLD.book_id IS NOT NULL) THEN
+        -- Check if this is UPDATE or DELETE by checking if OLD and NEW differ
+        IF (OLD.book_id IS NOT NULL AND (OLD.book_id <> NEW.book_id OR NEW.book_id IS NOT NULL)) THEN
+            SET v_operation_type = 'UPDATE_BEFORE';
+        ELSE
+            SET v_operation_type = 'DELETE_BEFORE';
+        END IF;
+    END IF;
+
+    INSERT INTO Library_Audit (
+        book_id, title, author, published_year, operation_type, operation_time
+    ) VALUES (
+        OLD.book_id, OLD.title, OLD.author, OLD.published_year, v_operation_type, NOW()
+    );
+END $$
+
+DELIMITER ;
+```
+
+But since in DELETE triggers `NEW` is not accessible, this causes error.
+
+---
+
+### So the safest and correct approach is:
+
+```sql
+DELIMITER $$
+
+CREATE TRIGGER trg_before_update_delete_library
+BEFORE UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (
+        book_id, title, author, published_year, operation_type, operation_time
+    ) VALUES (
+        OLD.book_id, OLD.title, OLD.author, OLD.published_year, 'UPDATE_BEFORE', NOW()
+    );
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER trg_before_delete_library
+BEFORE DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (
+        book_id, title, author, published_year, operation_type, operation_time
+    ) VALUES (
+        OLD.book_id, OLD.title, OLD.author, OLD.published_year, 'DELETE_BEFORE', NOW()
+    );
+END $$
+
+DELIMITER ;
+```
+
+---
+
+### **Summary:**
+
+* MySQL does **not support** a combined `BEFORE UPDATE OR DELETE` trigger accessing both OLD and NEW properly.
+* The cleanest **best practice** is to create two triggers:
+
+  * One **before update** trigger.
+  * One **before delete** trigger.
+* Both insert into `Library_Audit` with relevant operation type.
+
+---
+
+If you still want me to force a single trigger using some workaround or using statement-level triggers, let me know! But this two-trigger approach is the cleanest and error-free.
+
+---
+
+Would you like me to generate the full SQL including the audit table creation?
+

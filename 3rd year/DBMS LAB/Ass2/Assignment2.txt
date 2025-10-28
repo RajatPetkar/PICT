@@ -1,0 +1,691 @@
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| te31418_db         |
++--------------------+
+2 rows in set (0.01 sec)
+
+mysql> use te31418_db;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql>
+
+
+
+
+mysql> create table Student_Records(Student_Id int primary key, First_Name varchar(20), Address varchar(30), Age int not null, Percentage int not null, Grade varchar(10));
+Query OK, 0 rows affected (0.61 sec)
+
+mysql> desc Student_Records;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| Student_Id | int(11)     | NO   | PRI | NULL    |       |
+| First_Name | varchar(20) | YES  |     | NULL    |       |
+| Address    | varchar(30) | YES  |     | NULL    |       |
+| Age        | int(11)     | NO   |     | NULL    |       |
+| Percentage | int(11)     | NO   |     | NULL    |       |
+| Grade      | varchar(10) | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+6 rows in set (6.95 sec)
+
+mysql> commit;
+Query OK, 0 rows affected (1.73 sec)
+
+mysql>
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+1. Creation of tables:-
+mysql> create table PlacementDrive(Drive_id int primary key, Pcompany_name varchar(30), package int, location varchar(30));
+Query OK, 0 rows affected (0.60 sec)
+
+mysql> desc PlacementDrive;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| Drive_id      | int(11)     | NO   | PRI | NULL    |       |
+| Pcompany_name | varchar(30) | YES  |     | NULL    |       |
+| package       | int(11)     | YES  |     | NULL    |       |
+| location      | varchar(30) | YES  |     | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+4 rows in set (0.86 sec)
+
+mysql>
+
+
+
+
+mysql> create table Training(T_id int primary key, Tcompany_name varchar(30), T_fee int, T_year date);
+Query OK, 0 rows affected (0.18 sec)
+
+mysql> desc Training;
++---------------+-------------+------+-----+---------+-------+
+| Field         | Type        | Null | Key | Default | Extra |
++---------------+-------------+------+-----+---------+-------+
+| T_id          | int(11)     | NO   | PRI | NULL    |       |
+| Tcompany_name | varchar(30) | YES  |     | NULL    |       |
+| T_fee         | int(11)     | YES  |     | NULL    |       |
+| T_year        | date        | YES  |     | NULL    |       |
++---------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql>
+
+
+
+
+mysql> CREATE TABLE Student (
+    ->     S_id INT PRIMARY KEY,
+    ->     Drive_id INT,
+    ->     T_id INT,
+    ->     S_name VARCHAR(20),
+    ->     CGPA DECIMAL(4,2),
+    ->     S_branch VARCHAR(20),
+    ->     S_dob DATE,
+    ->     FOREIGN KEY (Drive_id) REFERENCES PlacementDrive(Drive_id) ON DELETE CASCADE,
+    ->     FOREIGN KEY (T_id) REFERENCES Training(T_id) ON DELETE CASCADE
+    -> );
+Query OK, 0 rows affected (0.24 sec)
+
+mysql> desc Student;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| S_id     | int(11)      | NO   | PRI | NULL    |       |
+| Drive_id | int(11)      | YES  | MUL | NULL    |       |
+| T_id     | int(11)      | YES  | MUL | NULL    |       |
+| S_name   | varchar(20)  | YES  |     | NULL    |       |
+| CGPA     | decimal(4,2) | YES  |     | NULL    |       |
+| S_branch | varchar(20)  | YES  |     | NULL    |       |
+| S_dob    | date         | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+2. Insertion of records into tables:-
+mysql> INSERT INTO PlacementDrive (Drive_id, Pcompany_name, package, location) VALUES
+    -> (1, 'Google', 2500000, 'Bangalore'),
+    -> (2, 'Amazon', 2000000, 'Hyderabad'),
+    -> (3, 'Infosys', 800000, 'Pune'),
+    -> (4, 'TCS', 700000, 'Mumbai'),
+    -> (5, 'Microsoft', 2300000, 'Noida'),
+    -> (6, 'Capgemini', 650000, 'Chennai'),
+    -> (7, 'Wipro', 600000, 'Kolkata'),
+    -> (8, 'IBM', 950000, 'Delhi'),
+    -> (9, 'Oracle', 1800000, 'Bangalore'),
+    -> (10, 'HCL', 750000, 'Nagpur');
+Query OK, 10 rows affected (0.04 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Training (T_id, Tcompany_name, T_fee, T_year) VALUES
+    -> (101, 'Udemy', 5000, '2021-01-01'),
+    -> (102, 'Coursera', 12000, '2019-01-01'),
+    -> (103, 'Great Learning', 10000, '2021-01-01'),
+    -> (104, 'Scaler', 12000, '2021-01-01'),
+    -> (105, 'Simplilearn', 14250, '2019-01-01'),
+    -> (106, 'NPTEL', 3000, '2021-01-01'),
+    -> (107, 'LinkedIn Learning', 8500, '2021-01-01'),
+    -> (108, 'Coding Ninjas', 16500, '2019-01-01'),
+    -> (109, 'Edureka', 7800, '2021-01-01'),
+    -> (110, 'Skillshare', 6000, '2021-01-01');
+Query OK, 10 rows affected (0.03 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Student (S_id, Drive_id, T_id, S_name, CGPA, S_branch, S_dob) VALUES
+    -> (1001, 1, 101, 'Rahul Sharma', 8.75, 'CSE', '2003-05-20'),
+    -> (1002, 2, 102, 'Priya Mehta', 9.10, 'ECE', '2002-11-12'),
+    -> (1003, 3, 103, 'Ankit Verma', 7.80, 'IT', '2004-02-08'),
+    -> (1004, 4, 104, 'Sneha Gupta', 8.50, 'EEE', '2002-07-14'),
+    -> (1005, 5, 105, 'Manish Rao', 9.00, 'ME', '2003-09-05'),
+    -> (1006, 6, 106, 'Neha Singh', 8.20, 'CSE', '2001-12-25'),
+    -> (1007, 7, 107, 'Aditya Kumar', 7.95, 'ECE', '2003-04-18'),
+    -> (1008, 8, 108, 'Divya Patel', 8.60, 'IT', '2002-06-30'),
+    -> (1009, 9, 109, 'Rohan Joshi', 9.20, 'CSE', '2001-10-22'),
+    -> (1010, 10, 110, 'Kritika Yadav', 8.00, 'CIVIL', '2004-01-17');
+Query OK, 10 rows affected (0.07 sec)
+Records: 10  Duplicates: 0  Warnings: 0
+
+mysql>
+
+
+
+
+mysql> select * from PlacementDrive;
++----------+---------------+---------+-----------+
+| Drive_id | Pcompany_name | package | location  |
++----------+---------------+---------+-----------+
+|        1 | Google        | 2500000 | Bangalore |
+|        2 | Amazon        | 2000000 | Hyderabad |
+|        3 | Infosys       |  800000 | Pune      |
+|        4 | TCS           |  700000 | Mumbai    |
+|        5 | Microsoft     | 2300000 | Noida     |
+|        6 | Capgemini     |  650000 | Chennai   |
+|        7 | Wipro         |  600000 | Kolkata   |
+|        8 | IBM           |  950000 | Delhi     |
+|        9 | Oracle        | 1800000 | Bangalore |
+|       10 | HCL           |  750000 | Nagpur    |
++----------+---------------+---------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> select * from Training;
++------+-------------------+-------+------------+
+| T_id | Tcompany_name     | T_fee | T_year     |
++------+-------------------+-------+------------+
+|  101 | Udemy             |  5000 | 2021-01-01 |
+|  102 | Coursera          | 12000 | 2019-01-01 |
+|  103 | Great Learning    | 10000 | 2021-01-01 |
+|  104 | Scaler            | 12000 | 2021-01-01 |
+|  105 | Simplilearn       | 14250 | 2019-01-01 |
+|  106 | NPTEL             |  3000 | 2021-01-01 |
+|  107 | LinkedIn Learning |  8500 | 2021-01-01 |
+|  108 | Coding Ninjas     | 16500 | 2019-01-01 |
+|  109 | Edureka           |  7800 | 2021-01-01 |
+|  110 | Skillshare        |  6000 | 2021-01-01 |
++------+-------------------+-------+------------+
+10 rows in set (0.00 sec)
+
+mysql> select * from Student;
++------+----------+------+---------------+------+----------+------------+
+| S_id | Drive_id | T_id | S_name        | CGPA | S_branch | S_dob      |
++------+----------+------+---------------+------+----------+------------+
+| 1001 |        1 |  101 | Rahul Sharma  | 8.75 | CSE      | 2003-05-20 |
+| 1002 |        2 |  102 | Priya Mehta   | 9.10 | ECE      | 2002-11-12 |
+| 1003 |        3 |  103 | Ankit Verma   | 7.80 | IT       | 2004-02-08 |
+| 1004 |        4 |  104 | Sneha Gupta   | 8.50 | EEE      | 2002-07-14 |
+| 1005 |        5 |  105 | Manish Rao    | 9.00 | ME       | 2003-09-05 |
+| 1006 |        6 |  106 | Neha Singh    | 8.20 | CSE      | 2001-12-25 |
+| 1007 |        7 |  107 | Aditya Kumar  | 7.95 | ECE      | 2003-04-18 |
+| 1008 |        8 |  108 | Divya Patel   | 8.60 | IT       | 2002-06-30 |
+| 1009 |        9 |  109 | Rohan Joshi   | 9.20 | CSE      | 2001-10-22 |
+| 1010 |       10 |  110 | Kritika Yadav | 8.00 | CIVIL    | 2004-01-17 |
++------+----------+------+---------------+------+----------+------------+
+10 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+3. Display specific details:-
+  A. Display students whose departments are either Computer or IT:-
+
+mysql> select * from Student where S_branch='CSE' or S_branch='IT';
++------+----------+------+--------------+------+----------+------------+
+| S_id | Drive_id | T_id | S_name       | CGPA | S_branch | S_dob      |
++------+----------+------+--------------+------+----------+------------+
+| 1001 |        1 |  101 | Rahul Sharma | 8.75 | CSE      | 2003-05-20 |
+| 1003 |        3 |  103 | Ankit Verma  | 7.80 | IT       | 2004-02-08 |
+| 1006 |        6 |  106 | Neha Singh   | 8.20 | CSE      | 2001-12-25 |
+| 1008 |        8 |  108 | Divya Patel  | 8.60 | IT       | 2002-06-30 |
+| 1009 |        9 |  109 | Rohan Joshi  | 9.20 | CSE      | 2001-10-22 |
++------+----------+------+--------------+------+----------+------------+
+5 rows in set (1.21 sec)
+
+mysql> 
+
+
+  B. Display students whose name starts with 'a' or 'd':-
+mysql> select * from Student 
+    -> where S_name like 'A%' or S_name like 'D%';
++------+----------+------+--------------+------+----------+------------+
+| S_id | Drive_id | T_id | S_name       | CGPA | S_branch | S_dob      |
++------+----------+------+--------------+------+----------+------------+
+| 1003 |        3 |  103 | Ankit Verma  | 7.80 | IT       | 2004-02-08 |
+| 1007 |        7 |  107 | Aditya Kumar | 7.95 | ECE      | 2003-04-18 |
+| 1008 |        8 |  108 | Divya Patel  | 8.60 | IT       | 2002-06-30 |
++------+----------+------+--------------+------+----------+------------+
+3 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+4. List the number of different companies:-
+mysql> select distinct Pcompany_name from PlacementDrive;
++---------------+
+| Pcompany_name |
++---------------+
+| Google        |
+| Amazon        |
+| Infosys       |
+| TCS           |
+| Microsoft     |
+| Capgemini     |
+| Wipro         |
+| IBM           |
+| Oracle        |
+| HCL           |
++---------------+
+10 rows in set (5.23 sec)
+
+mysql> select distinct Tcompany_name from Training;
++-------------------+
+| Tcompany_name     |
++-------------------+
+| Udemy             |
+| Coursera          |
+| Great Learning    |
+| Scaler            |
+| Simplilearn       |
+| NPTEL             |
+| LinkedIn Learning |
+| Coding Ninjas     |
+| Edureka           |
+| Skillshare        |
++-------------------+
+10 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+5. Increase 15% in trainig fee whose training year is 2019:-
+  A. Before:-
+mysql> update Training set T_year='2019-06-01' where T_id in (102, 105, 108);
+Query OK, 3 rows affected (0.03 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+mysql> select * from Training;
++------+-------------------+-------+------------+
+| T_id | Tcompany_name     | T_fee | T_year     |
++------+-------------------+-------+------------+
+|  101 | Udemy             |  5000 | 2021-01-01 |
+|  102 | Coursera          |  8000 | 2019-01-01 |
+|  103 | Great Learning    | 10000 | 2021-01-01 |
+|  104 | Scaler            | 12000 | 2021-01-01 |
+|  105 | Simplilearn       |  9500 | 2019-01-01 |
+|  106 | NPTEL             |  3000 | 2021-01-01 |
+|  107 | LinkedIn Learning |  8500 | 2021-01-01 |
+|  108 | Coding Ninjas     | 11000 | 2019-01-01 |
+|  109 | Edureka           |  7800 | 2021-01-01 |
+|  110 | Skillshare        |  6000 | 2021-01-01 |
++------+-------------------+-------+------------+
+10 rows in set (0.77 sec)
+
+mysql> select * from Training
+    -> where year(T_year)=2019;
++------+---------------+-------+------------+
+| T_id | Tcompany_name | T_fee | T_year     |
++------+---------------+-------+------------+
+|  102 | Coursera      |  8000 | 2019-01-01 |
+|  105 | Simplilearn   |  9500 | 2019-01-01 |
+|  108 | Coding Ninjas | 11000 | 2019-01-01 |
++------+---------------+-------+------------+
+3 rows in set (1.55 sec)
+
+mysql> 
+
+  B. After:-
+mysql> update Training set T_fee=T_fee*1.5 where year(T_year)=2019;
+Query OK, 3 rows affected (0.03 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+mysql> select * from Training where year(T_year)=2019;
++------+---------------+-------+------------+
+| T_id | Tcompany_name | T_fee | T_year     |
++------+---------------+-------+------------+
+|  102 | Coursera      | 12000 | 2019-01-01 |
+|  105 | Simplilearn   | 14250 | 2019-01-01 |
+|  108 | Coding Ninjas | 16500 | 2019-01-01 |
++------+---------------+-------+------------+
+3 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+6. Deleting details of students whose CGPA score is less than 8:-
+mysql> select * from Student
+    -> where CGPA < 8;
++------+----------+------+--------------+------+----------+------------+
+| S_id | Drive_id | T_id | S_name       | CGPA | S_branch | S_dob      |
++------+----------+------+--------------+------+----------+------------+
+| 1003 |        3 |  103 | Ankit Verma  | 7.80 | IT       | 2004-02-08 |
+| 1007 |        7 |  107 | Aditya Kumar | 7.95 | ECE      | 2003-04-18 |
++------+----------+------+--------------+------+----------+------------+
+2 rows in set (0.00 sec)
+
+mysql> delete from Student
+    -> where CGPA < 8;
+Query OK, 2 rows affected (0.07 sec)
+
+mysql> select * from Student;
++------+----------+------+---------------+------+----------+------------+
+| S_id | Drive_id | T_id | S_name        | CGPA | S_branch | S_dob      |
++------+----------+------+---------------+------+----------+------------+
+| 1001 |        1 |  101 | Rahul Sharma  | 8.75 | CSE      | 2003-05-20 |
+| 1002 |        2 |  102 | Priya Mehta   | 9.10 | ECE      | 2002-11-12 |
+| 1004 |        4 |  104 | Sneha Gupta   | 8.50 | EEE      | 2002-07-14 |
+| 1005 |        5 |  105 | Manish Rao    | 9.00 | ME       | 2003-09-05 |
+| 1006 |        6 |  106 | Neha Singh    | 8.20 | CSE      | 2001-12-25 |
+| 1008 |        8 |  108 | Divya Patel   | 8.60 | IT       | 2002-06-30 |
+| 1009 |        9 |  109 | Rohan Joshi   | 9.20 | CSE      | 2001-10-22 |
+| 1010 |       10 |  110 | Kritika Yadav | 8.00 | CIVIL    | 2004-01-17 |
++------+----------+------+---------------+------+----------+------------+
+8 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+7. Finding the company names belonging to Pune or Mumbai:-
+mysql> select * from PlacementDrive;
++----------+---------------+---------+-----------+
+| Drive_id | Pcompany_name | package | location  |
++----------+---------------+---------+-----------+
+|        1 | Google        | 2500000 | Bangalore |
+|        2 | Amazon        | 2000000 | Hyderabad |
+|        3 | Infosys       |  800000 | Pune      |
+|        4 | TCS           |  700000 | Mumbai    |
+|        5 | Microsoft     | 2300000 | Noida     |
+|        6 | Capgemini     |  650000 | Chennai   |
+|        7 | Wipro         |  600000 | Kolkata   |
+|        8 | IBM           |  950000 | Delhi     |
+|        9 | Oracle        | 1800000 | Bangalore |
+|       10 | HCL           |  750000 | Nagpur    |
++----------+---------------+---------+-----------+
+10 rows in set (0.46 sec)
+
+mysql> select * from PlacementDrive
+    -> where location='Pune' or location='Mumbai';
++----------+---------------+---------+----------+
+| Drive_id | Pcompany_name | package | location |
++----------+---------------+---------+----------+
+|        3 | Infosys       |  800000 | Pune     |
+|        4 | TCS           |  700000 | Mumbai   |
++----------+---------------+---------+----------+
+2 rows in set (0.00 sec)
+
+mysql> select Pcompany_name from PlacementDrive
+    -> where location='Pune' or location='Mumbai';
++---------------+
+| Pcompany_name |
++---------------+
+| Infosys       |
+| TCS           |
++---------------+
+2 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+8. Find student names whose joining date is 1-1-2019 as well as 1-1-2021:-
+mysql> SELECT S_name
+    -> FROM Student
+    -> WHERE T_id IN (
+    ->     SELECT T_id
+    ->     FROM Training
+    ->     WHERE T_year IN ('2019-01-01', '2021-01-01')
+    -> );
++---------------+
+| S_name        |
++---------------+
+| Rahul Sharma  |
+| Priya Mehta   |
+| Manish Rao    |
+| Divya Patel   |
+| Rohan Joshi   |
+| Kritika Yadav |
++---------------+
+6 rows in set (0.01 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+9. A. Find student name having maximum CGPA:-
+mysql> select S_name from Student
+    -> where CGPA=(select MAX(CGPA) from Student);
++-------------+
+| S_name      |
++-------------+
+| Rohan Joshi |
++-------------+
+1 row in set (0.00 sec)
+
+mysql> 
+
+9. B. Find names of students having CGPA score between 7 to 9:-
+mysql> select S_name from Student
+    -> where CGPA>7 and CGPA<9;
++---------------+
+| S_name        |
++---------------+
+| Rahul Sharma  |
+| Sneha Gupta   |
+| Neha Singh    |
+| Divya Patel   |
+| Kritika Yadav |
++---------------+
+5 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+10. Display all student names with T_id with decreasing order of Fees:-
+mysql> select S_name from Student
+    -> where T_id in (select T_id from Training order by T_fee desc);
++---------------+
+| S_name        |
++---------------+
+| Rahul Sharma  |
+| Priya Mehta   |
+| Sneha Gupta   |
+| Manish Rao    |
+| Neha Singh    |
+| Divya Patel   |
+| Rohan Joshi   |
+| Kritika Yadav |
++---------------+
+8 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+11. Display Pcompany_name, S_name, location and package with package 30k, 40k, 50k:-
+mysql> SELECT 
+    ->     Pcompany_name, 
+    ->     (SELECT S_name FROM Student WHERE Student.Drive_id = PlacementDrive.Drive_id LIMIT 1) AS S_name,
+    ->     location, 
+    ->     package
+    -> FROM 
+    ->     PlacementDrive
+    -> WHERE 
+    ->     package IN (30000, 40000, 50000);
++---------------+--------------+-----------+---------+
+| Pcompany_name | S_name       | location  | package |
++---------------+--------------+-----------+---------+
+| Google        | Rahul Sharma | Bangalore |   30000 |
+| Amazon        | Priya Mehta  | Hyderabad |   40000 |
+| TCS           | Sneha Gupta  | Mumbai    |   50000 |
+| Microsoft     | Manish Rao   | Noida     |   30000 |
+| Wipro         | NULL         | Kolkata   |   40000 |
+| Oracle        | Rohan Joshi  | Bangalore |   50000 |
++---------------+--------------+-----------+---------+
+6 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+12. Delete on cascade:-
+******Before:-
+mysql> select * from Student;
++------+----------+------+---------------+------+----------+------------+
+| S_id | Drive_id | T_id | S_name        | CGPA | S_branch | S_dob      |
++------+----------+------+---------------+------+----------+------------+
+| 1001 |        1 |  101 | Rahul Sharma  | 8.75 | CSE      | 2003-05-20 |
+| 1002 |        2 |  102 | Priya Mehta   | 9.10 | ECE      | 2002-11-12 |
+| 1004 |        4 |  104 | Sneha Gupta   | 8.50 | EEE      | 2002-07-14 |
+| 1005 |        5 |  105 | Manish Rao    | 9.00 | ME       | 2003-09-05 |
+| 1006 |        6 |  106 | Neha Singh    | 8.20 | CSE      | 2001-12-25 |
+| 1008 |        8 |  108 | Divya Patel   | 8.60 | IT       | 2002-06-30 |
+| 1009 |        9 |  109 | Rohan Joshi   | 9.20 | CSE      | 2001-10-22 |
+| 1010 |       10 |  110 | Kritika Yadav | 8.00 | CIVIL    | 2004-01-17 |
++------+----------+------+---------------+------+----------+------------+
+8 rows in set (0.00 sec)
+
+mysql> select * from Training;
++------+-------------------+-------+------------+
+| T_id | Tcompany_name     | T_fee | T_year     |
++------+-------------------+-------+------------+
+|  101 | Udemy             |  5000 | 2021-01-01 |
+|  102 | Coursera          | 12000 | 2019-01-01 |
+|  103 | Great Learning    | 10000 | 2021-01-01 |
+|  104 | Scaler            | 12000 | 2021-01-01 |
+|  105 | Simplilearn       | 14250 | 2019-01-01 |
+|  106 | NPTEL             |  3000 | 2021-01-01 |
+|  107 | LinkedIn Learning |  8500 | 2021-01-01 |
+|  108 | Coding Ninjas     | 16500 | 2019-01-01 |
+|  109 | Edureka           |  7800 | 2021-01-01 |
+|  110 | Skillshare        |  6000 | 2021-01-01 |
++------+-------------------+-------+------------+
+10 rows in set (0.01 sec)
+
+mysql> select * from PlacementDrive;
++----------+---------------+---------+-----------+
+| Drive_id | Pcompany_name | package | location  |
++----------+---------------+---------+-----------+
+|        1 | Google        |   30000 | Bangalore |
+|        2 | Amazon        |   40000 | Hyderabad |
+|        3 | Infosys       |  800000 | Pune      |
+|        4 | TCS           |   50000 | Mumbai    |
+|        5 | Microsoft     |   30000 | Noida     |
+|        6 | Capgemini     |  650000 | Chennai   |
+|        7 | Wipro         |   40000 | Kolkata   |
+|        8 | IBM           |  950000 | Delhi     |
+|        9 | Oracle        |   50000 | Bangalore |
+|       10 | HCL           |  750000 | Nagpur    |
++----------+---------------+---------+-----------+
+10 rows in set (0.00 sec)
+
+
+******Commands:-
+mysql> DELETE FROM PlacementDrive WHERE Drive_id = 2;
+Query OK, 1 row affected (0.03 sec)
+
+mysql> DELETE FROM Training WHERE T_id = 108;
+Query OK, 1 row affected (0.03 sec)
+
+
+******After:-
+mysql> select * from Student;
++------+----------+------+---------------+------+----------+------------+
+| S_id | Drive_id | T_id | S_name        | CGPA | S_branch | S_dob      |
++------+----------+------+---------------+------+----------+------------+
+| 1001 |        1 |  101 | Rahul Sharma  | 8.75 | CSE      | 2003-05-20 |
+| 1004 |        4 |  104 | Sneha Gupta   | 8.50 | EEE      | 2002-07-14 |
+| 1005 |        5 |  105 | Manish Rao    | 9.00 | ME       | 2003-09-05 |
+| 1006 |        6 |  106 | Neha Singh    | 8.20 | CSE      | 2001-12-25 |
+| 1009 |        9 |  109 | Rohan Joshi   | 9.20 | CSE      | 2001-10-22 |
+| 1010 |       10 |  110 | Kritika Yadav | 8.00 | CIVIL    | 2004-01-17 |
++------+----------+------+---------------+------+----------+------------+
+6 rows in set (0.00 sec)
+
+mysql> select * from Training;
++------+-------------------+-------+------------+
+| T_id | Tcompany_name     | T_fee | T_year     |
++------+-------------------+-------+------------+
+|  101 | Udemy             |  5000 | 2021-01-01 |
+|  102 | Coursera          | 12000 | 2019-01-01 |
+|  103 | Great Learning    | 10000 | 2021-01-01 |
+|  104 | Scaler            | 12000 | 2021-01-01 |
+|  105 | Simplilearn       | 14250 | 2019-01-01 |
+|  106 | NPTEL             |  3000 | 2021-01-01 |
+|  107 | LinkedIn Learning |  8500 | 2021-01-01 |
+|  109 | Edureka           |  7800 | 2021-01-01 |
+|  110 | Skillshare        |  6000 | 2021-01-01 |
++------+-------------------+-------+------------+
+9 rows in set (0.00 sec)
+
+mysql> select * from PlacementDrive;
++----------+---------------+---------+-----------+
+| Drive_id | Pcompany_name | package | location  |
++----------+---------------+---------+-----------+
+|        1 | Google        |   30000 | Bangalore |
+|        3 | Infosys       |  800000 | Pune      |
+|        4 | TCS           |   50000 | Mumbai    |
+|        5 | Microsoft     |   30000 | Noida     |
+|        6 | Capgemini     |  650000 | Chennai   |
+|        7 | Wipro         |   40000 | Kolkata   |
+|        8 | IBM           |  950000 | Delhi     |
+|        9 | Oracle        |   50000 | Bangalore |
+|       10 | HCL           |  750000 | Nagpur    |
++----------+---------------+---------+-----------+
+9 rows in set (0.00 sec)
+
+mysql>
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+13. View:-
+mysql> CREATE VIEW StudentTrainingPlacementView AS
+    -> SELECT
+    ->     s.S_id,
+    ->     s.T_id,
+    ->     s.Drive_id,
+    ->     s.S_name,
+    ->     s.CGPA,
+    ->     (SELECT pd.Pcompany_name FROM PlacementDrive pd WHERE pd.Drive_id = s.Drive_id LIMIT 1) AS Pcompany_name,
+    ->     (SELECT t.Tcompany_name FROM Training t WHERE t.T_id = s.T_id LIMIT 1) AS Tcompany_name,
+    ->     (SELECT pd.location FROM PlacementDrive pd WHERE pd.Drive_id = s.Drive_id LIMIT 1) AS location
+    -> FROM
+    ->     Student s
+    -> ORDER BY
+    ->     s.S_id;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> SELECT * FROM StudentTrainingPlacementView;
++------+------+----------+---------------+------+---------------+---------------+-----------+
+| S_id | T_id | Drive_id | S_name        | CGPA | Pcompany_name | Tcompany_name | location  |
++------+------+----------+---------------+------+---------------+---------------+-----------+
+| 1001 |  101 |        1 | Rahul Sharma  | 8.75 | Google        | Udemy         | Bangalore |
+| 1004 |  104 |        4 | Sneha Gupta   | 8.50 | TCS           | Scaler        | Mumbai    |
+| 1005 |  105 |        5 | Manish Rao    | 9.00 | Microsoft     | Simplilearn   | Noida     |
+| 1006 |  106 |        6 | Neha Singh    | 8.20 | Capgemini     | NPTEL         | Chennai   |
+| 1009 |  109 |        9 | Rohan Joshi   | 9.20 | Oracle        | Edureka       | Bangalore |
+| 1010 |  110 |       10 | Kritika Yadav | 8.00 | HCL           | Skillshare    | Nagpur    |
++------+------+----------+---------------+------+---------------+---------------+-----------+
+6 rows in set (0.01 sec)
+
+mysql> 

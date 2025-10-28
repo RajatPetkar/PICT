@@ -1,0 +1,42 @@
+CREATE OR REPLACE PROCEDURE proc_Grade (
+    p_roll IN VARCHAR2,
+    p_name IN VARCHAR2,
+    p_marks IN NUMBER
+) IS
+    v_class VARCHAR2(20);
+BEGIN
+    -- Categorizing the students based on the marks
+    IF p_marks >= 990 AND p_marks <= 1500 THEN
+        v_class := 'Distinction';
+    ELSIF p_marks >= 900 AND p_marks <= 989 THEN
+        v_class := 'First Class';
+    ELSIF p_marks >= 825 AND p_marks <= 899 THEN
+        v_class := 'Higher Second Class';
+    ELSE
+        v_class := 'Fail';
+    END IF;
+    
+    -- Inserting the result into the Result table
+    INSERT INTO Result (Roll, Name, Class)
+    VALUES (p_roll, p_name, v_class);
+
+    COMMIT;
+END proc_Grade;
+/
+
+
+
+DECLARE
+    -- Variables to store student information
+    v_roll VARCHAR2(20) := 'S1234';
+    v_name VARCHAR2(50) := 'John Doe';
+    v_marks NUMBER := 950;
+BEGIN
+    -- Calling the procedure to categorize the student and insert the result
+    proc_Grade(v_roll, v_name, v_marks);
+    
+    -- Optionally, you can display a message indicating the process is complete
+    DBMS_OUTPUT.PUT_LINE('Grade successfully inserted for ' || v_name || '.');
+END;
+/
+

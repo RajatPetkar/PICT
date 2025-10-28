@@ -1,0 +1,233 @@
+1. Find Student details and Placement details using NATURAL JOIN:-
+mysql> select * from Student
+    -> NATURAL JOIN PlacementDrive;
+
++----------+------+------+---------------+------+----------+------------+---------------+---------+-----------+
+| Drive_id | S_id | T_id | S_name        | CGPA | S_branch | S_dob      | Pcompany_name | package | location  |
++----------+------+------+---------------+------+----------+------------+---------------+---------+-----------+
+|        1 | 1001 |  101 | Rahul Sharma  | 8.75 | CSE      | 2003-05-20 | Google        |   30000 | Bangalore |
+|        4 | 1004 |  104 | Sneha Gupta   | 8.50 | EEE      | 2002-07-14 | TCS           |   50000 | Mumbai    |
+|        5 | 1005 |  105 | Manish Rao    | 9.00 | ME       | 2003-09-05 | Microsoft     |   30000 | Noida     |
+|        6 | 1006 |  106 | Neha Singh    | 8.20 | CSE      | 2001-12-25 | Capgemini     |  650000 | Chennai   |
+|        9 | 1009 |  109 | Rohan Joshi   | 9.20 | CSE      | 2001-10-22 | Oracle        |   50000 | Bangalore |
+|       10 | 1010 |  110 | Kritika Yadav | 8.00 | CIVIL    | 2004-01-17 | HCL           |  750000 | Nagpur    |
++----------+------+------+---------------+------+----------+------------+---------------+---------+-----------+
+6 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+2. Find Student details with company name who have conducted same drive:-
+mysql> SELECT 
+    ->     s.S_id, 
+    ->     s.S_name, 
+    ->     s.CGPA, 
+    ->     s.S_branch, 
+    ->     s.S_dob, 
+    ->     p.Pcompany_name AS Drive_company_name,
+    ->     p.package,
+    ->     p.location
+    -> FROM 
+    ->     Student s
+    -> JOIN 
+    ->     PlacementDrive p ON s.Drive_id = p.Drive_id;
++------+---------------+------+----------+------------+--------------------+---------+-----------+
+| S_id | S_name        | CGPA | S_branch | S_dob      | Drive_company_name | package | location  |
++------+---------------+------+----------+------------+--------------------+---------+-----------+
+| 1001 | Rahul Sharma  | 8.75 | CSE      | 2003-05-20 | Google             |   30000 | Bangalore |
+| 1011 | Aditya Sharma | 8.10 | CSE      | 2003-01-15 | Accenture          |   55000 | Hyderabad |
+| 1015 | Eshan Kumar   | 8.30 | CSE      | 2004-02-12 | Accenture          |   55000 | Hyderabad |
+| 1019 | Ishaan Verma  | 8.00 | EEE      | 2003-09-17 | Accenture          |   55000 | Hyderabad |
+| 1002 | Vikram Singh  | 8.30 | CSE      | 2003-02-14 | Infosys            |  800000 | Pune      |
+| 1012 | Bhavna Patel  | 8.50 | IT       | 2003-04-10 | Infosys            |  800000 | Pune      |
+| 1016 | Falguni Desai | 7.80 | IT       | 2003-11-20 | Infosys            |  800000 | Pune      |
+| 1020 | Jaya Gupta    | 8.40 | ME       | 2003-05-29 | Infosys            |  800000 | Pune      |
+| 1004 | Sneha Gupta   | 8.50 | EEE      | 2002-07-14 | TCS                |   50000 | Mumbai    |
+| 1008 | Pooja Rao     | 8.50 | CIVIL    | 2004-05-17 | TCS                |   50000 | Mumbai    |
+| 1005 | Manish Rao    | 9.00 | ME       | 2003-09-05 | Microsoft          |   30000 | Noida     |
+| 1006 | Neha Singh    | 8.20 | CSE      | 2001-12-25 | Capgemini          |  650000 | Chennai   |
+| 1003 | Neeta Sharma  | 8.75 | EEE      | 2002-09-30 | Wipro              |   40000 | Kolkata   |
+| 1013 | Chirag Mehta  | 7.90 | CSE      | 2002-08-23 | Wipro              |   40000 | Kolkata   |
+| 1017 | Gaurav Singh  | 8.60 | CSE      | 2002-07-30 | Wipro              |   40000 | Kolkata   |
+| 1007 | Arjun Das     | 7.90 | ME       | 2003-11-22 | IBM                |  950000 | Delhi     |
+| 1014 | Deepa Rao     | 8.20 | IT       | 2003-12-05 | IBM                |  950000 | Delhi     |
+| 1018 | Hema Joshi    | 7.70 | IT       | 2004-03-14 | IBM                |  950000 | Delhi     |
+| 1009 | Rohan Joshi   | 9.20 | CSE      | 2001-10-22 | Oracle             |   50000 | Bangalore |
+| 1010 | Kritika Yadav | 8.00 | CIVIL    | 2004-01-17 | HCL                |  750000 | Nagpur    |
++------+---------------+------+----------+------------+--------------------+---------+-----------+
+20 rows in set (0.00 sec)
+
+mysql>
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+3. List Student name and Student branch of student having package 5 LPA:-
+mysql> select * from PlacementDrive;
++----------+---------------+---------+-----------+
+| Drive_id | Pcompany_name | package | location  |
++----------+---------------+---------+-----------+
+|        1 | Google        |   30000 | Bangalore |
+|        2 | Accenture     |   55000 | Hyderabad |
+|        3 | Infosys       |  800000 | Pune      |
+|        4 | TCS           |   50000 | Mumbai    |
+|        5 | Microsoft     |   30000 | Noida     |
+|        6 | Capgemini     |  650000 | Chennai   |
+|        7 | Wipro         |  500000 | Kolkata   |
+|        8 | IBM           |  950000 | Delhi     |
+|        9 | Oracle        |   50000 | Bangalore |
+|       10 | HCL           |  750000 | Nagpur    |
++----------+---------------+---------+-----------+
+10 rows in set (0.00 sec)
+
+mysql> SELECT 
+    ->     s.S_name, 
+    ->     s.S_branch
+    -> FROM 
+    ->     Student s
+    -> JOIN 
+    ->     PlacementDrive p ON s.Drive_id = p.Drive_id
+    -> WHERE 
+    ->     p.package = 500000;
++--------------+----------+
+| S_name       | S_branch |
++--------------+----------+
+| Neeta Sharma | EEE      |
+| Chirag Mehta | CSE      |
+| Gaurav Singh | CSE      |
++--------------+----------+
+3 rows in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+4. List Student names and Company name having T_fee more than 10000:-
+mysql> SELECT
+    ->     s.S_name,
+    ->     t.Tcompany_name
+    -> FROM
+    ->     Student s
+    -> JOIN
+    ->     Training t ON s.T_id=t.T_id
+    -> WHERE
+    ->     t.T_fee>10000;
++---------------+---------------+
+| S_name        | Tcompany_name |
++---------------+---------------+
+| Vikram Singh  | Coursera      |
+| Aditya Sharma | Coursera      |
+| Eshan Kumar   | Coursera      |
+| Ishaan Verma  | Coursera      |
+| Sneha Gupta   | Scaler        |
+| Pooja Rao     | Scaler        |
+| Manish Rao    | Simplilearn   |
++---------------+---------------+
+7 rows in set (0.01 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+5. Display all trainig details attended by "Shantanu" in year 2011:-
+mysql> SELECT
+    ->     S.S_name,
+    ->     T.Tcompany_name,
+    ->     T.T_fee,
+    ->     T.T_year
+    -> FROM
+    ->     Student AS S
+    -> JOIN
+    ->     Training AS T ON S.T_id = T.T_id
+    -> WHERE
+    ->     S.S_name = 'Shantanu Das' AND T.T_year = '2011-01-01';
++--------------+----------------+-------+------------+
+| S_name       | Tcompany_name  | T_fee | T_year     |
++--------------+----------------+-------+------------+
+| Shantanu Das | Great Learning | 10000 | 2011-01-01 |
++--------------+----------------+-------+------------+
+1 row in set (0.00 sec)
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+6. List total no. of companies who conduct training before 2015:-
+mysql> select * from Training;
++------+-------------------+-------+------------+
+| T_id | Tcompany_name     | T_fee | T_year     |
++------+-------------------+-------+------------+
+|  101 | Udemy             |  5000 | 2021-01-01 |
+|  102 | Coursera          | 12000 | 2019-01-01 |
+|  103 | Great Learning    | 10000 | 2011-01-01 |
+|  104 | Scaler            | 12000 | 2021-01-01 |
+|  105 | Simplilearn       | 14250 | 2019-01-01 |
+|  106 | NPTEL             |  3000 | 2014-01-01 |
+|  107 | LinkedIn Learning |  8500 | 2021-01-01 |
+|  109 | Edureka           |  7800 | 2021-01-01 |
+|  110 | Skillshare        |  6000 | 2021-01-01 |
++------+-------------------+-------+------------+
+9 rows in set (0.01 sec)
+
+mysql> SELECT
+    ->     COUNT(DISTINCT Tcompany_name) AS TotalCompaniesBefore2015
+    -> FROM
+    ->     Training
+    -> WHERE
+    ->     T_year < '2015-01-01';
++--------------------------+
+| TotalCompaniesBefore2015 |
++--------------------------+
+|                        2 |
++--------------------------+
+1 row in set (0.00 sec)
+
+mysql>
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+7. List Students name with company "Microsoft" and location "Mumbai":-
+mysql> SELECT 
+    ->     s.S_name, d.Pcompany_name 
+    -> FROM 
+    ->     Student s 
+    -> JOIN 
+    ->     PlacementDrive d ON (d.Drive_id=s.Drive_id) 
+    -> WHERE 
+    ->     d.Pcompany_name="Microsoft" AND d.location="Mumbai";
++------------+---------------+
+| S_name     | Pcompany_name |
++------------+---------------+
+| Manish Rao | Microsoft     |
++------------+---------------+
+1 row in set (0.00 sec)
+
+
+mysql> 
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+
+8. Find names of all Students who have joined "Microsoft" training in 2015:-
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,139 @@
+DELIMITER $$
+CREATE OR REPLACE PROCEDURE merge_Tables(	)
+BEGIN
+	DECLARE v_empid INT;
+	DECLARE v_name VARCHAR(100);
+	DECLARE v_salary DECIMAL(10,2);
+	DECLARE v_total_emp INT;
+	
+	DECLARE done BOOLEAN DEFAULT FALSE;
+	
+	DECLARE c_explicit CURSOR FOR
+		SELECT emp_id, emp_name, emp_salary
+		FROM N_Empld
+		WHERE emp_id NOT IN (SELECT emp_id FROM O_Empld);
+		
+	
+	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+	
+	OPEN c_explicit;
+	
+	read_loop: WHILE NOT done DO 
+		FETCH c_explicit INTO v_empid, v_name, v_salary;
+		
+		IF done THEN
+            		LEAVE read_loop;
+        	END IF;
+		
+		INSERT INTO O_Empld(emp_id, emp_name, emp_salary) 
+		VALUES (v_empid, v_name, v_salary);
+		
+		SELECT CONCAT('EMP_ID: ',v_empid, ', EMP_NAME: ', v_name, ', EMP_SALARY: ',v_salary) AS message;
+	END WHILE;
+	
+	CLOSE c_explicit;
+	
+	SELECT COUNT(*) INTO v_total_emp
+	FROM N_Empld
+	WHERE emp_id NOT IN(SELECT emp_id FROM O_Empld);
+	
+	SELECT CONCAT('Total new employees(not in O_EmpId): ', v_total_emp) AS message;
+END $$
+DELIMITER ;
+
+
+
+mysql> CALL merge_Tables();
++--------------------------------------------------------+
+| message                                                |
++--------------------------------------------------------+
+| EMP_ID: 4, EMP_NAME: Alice Green, EMP_SALARY: 45000.00 |
++--------------------------------------------------------+
+1 row in set (0.03 sec)
+
++------------------------------------------------------+
+| message                                              |
++------------------------------------------------------+
+| EMP_ID: 5, EMP_NAME: Bob Brown, EMP_SALARY: 48000.00 |
++------------------------------------------------------+
+1 row in set (0.05 sec)
+
++-----------------------------------------------------+
+| message                                             |
++-----------------------------------------------------+
+| EMP_ID: 6, EMP_NAME: John Doe, EMP_SALARY: 50000.00 |
++-----------------------------------------------------+
+1 row in set (0.10 sec)
+
++-------------------------------------------------------+
+| message                                               |
++-------------------------------------------------------+
+| EMP_ID: 7, EMP_NAME: Lily Adams, EMP_SALARY: 47000.00 |
++-------------------------------------------------------+
+1 row in set (0.15 sec)
+
++---------------------------------------------------------+
+| message                                                 |
++---------------------------------------------------------+
+| EMP_ID: 8, EMP_NAME: Mark Johnson, EMP_SALARY: 60000.00 |
++---------------------------------------------------------+
+1 row in set (0.18 sec)
+
++----------------------------------------+
+| message                                |
++----------------------------------------+
+| Total new employees(not in O_EmpId): 0 |
++----------------------------------------+
+1 row in set (0.18 sec)
+
+Query OK, 6 rows affected (0.18 sec)
+
+mysql> 
+
+Before:-
+mysql> SELECT * FROM O_Empld;
++--------+--------------+------------+
+| emp_id | emp_name     | emp_salary |
++--------+--------------+------------+
+|      1 | John Doe     |   50000.00 |
+|      2 | Jane Smith   |   55000.00 |
+|      3 | Mark Johnson |   60000.00 |
++--------+--------------+------------+
+8 rows in set (0.01 sec)
+
+mysql>
+
+mysql> SELECT * FROM N_Empld;
++--------+--------------+------------+
+| emp_id | emp_name     | emp_salary |
++--------+--------------+------------+
+|      4 | Alice Green  |   45000.00 |
+|      5 | Bob Brown    |   48000.00 |
+|      6 | John Doe     |   50000.00 |
+|      7 | Lily Adams   |   47000.00 |
+|      8 | Mark Johnson |   60000.00 |
++--------+--------------+------------+
+5 rows in set (0.00 sec)
+
+mysql> 
+
+
+After:-
+mysql> SELECT * FROM O_Empld;
++--------+--------------+------------+
+| emp_id | emp_name     | emp_salary |
++--------+--------------+------------+
+|      1 | John Doe     |   50000.00 |
+|      2 | Jane Smith   |   55000.00 |
+|      3 | Mark Johnson |   60000.00 |
+|      4 | Alice Green  |   45000.00 |
+|      5 | Bob Brown    |   48000.00 |
+|      6 | John Doe     |   50000.00 |
+|      7 | Lily Adams   |   47000.00 |
+|      8 | Mark Johnson |   60000.00 |
++--------+--------------+------------+
+8 rows in set (0.01 sec)
+
+mysql>
+
+
