@@ -1,0 +1,15 @@
+ALA for macro: M1
+1	10
+2	20
+3	A	AREG
+4	B	-
+4	B	CREG
+
+ALA for macro: M2
+1	100
+2	200
+3	U	CREG
+4	V	DREG
+4	V	AREG
+3	U	BREG
+
