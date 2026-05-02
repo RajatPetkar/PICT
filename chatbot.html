@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alex Rivera — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --card: #16161f;
+    --border: #2a2a3a;
+    --accent: #7c6af7;
+    --accent2: #f7a26a;
+    --text: #e8e8f0;
+    --muted: #8888a0;
+    --chat-bg: #0d0d14;
+    --user-bubble: #7c6af7;
+    --bot-bubble: #1e1e2e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 1.25rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(10,10,15,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .nav-links { display: flex; gap: 2.5rem; }
+  .nav-links a {
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    gap: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(124,106,247,0.15) 0%, transparent 70%);
+    top: 50%; left: 30%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(124,106,247,0.1);
+    border: 1px solid rgba(124,106,247,0.3);
+    border-radius: 100px;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 5vw, 5.5rem);
+    line-height: 1.05;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  .hero p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--muted);
+    max-width: 480px;
+    margin-bottom: 2.5rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, var(--accent), #5b4dd4);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 0 30px rgba(124,106,247,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 50px rgba(124,106,247,0.5);
+  }
+
+  .btn-outline {
+    padding: 0.9rem 2rem;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  .hero-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+  }
+
+  .avatar-ring {
+    width: 360px; height: 360px;
+    border-radius: 50%;
+    border: 2px solid rgba(124,106,247,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: spin-slow 20s linear infinite;
+  }
+
+  @keyframes spin-slow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .avatar-ring::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 1px dashed rgba(247,162,106,0.2);
+  }
+
+  .avatar-inner {
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e1e2e, #2a2a3a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    animation: spin-slow 20s linear infinite reverse;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .orbit-dot {
+    position: absolute;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 20px var(--accent);
+    animation: spin-slow 20s linear infinite reverse;
+  }
+
+  .stats {
+    padding: 2rem 4rem;
+    display: flex;
+    gap: 3rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-label { color: var(--muted); font-size: 0.85rem; margin-top: 0.2rem; }
+
+  section {
+    padding: 5rem 4rem;
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 3rem;
+  }
+
+  #skills { background: var(--surface); }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .skill-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(124,106,247,0.05), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .skill-card:hover { border-color: rgba(124,106,247,0.4); transform: translateY(-4px); }
+  .skill-card:hover::before { opacity: 1; }
+
+  .skill-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+  .skill-name { font-weight: 600; margin-bottom: 0.5rem; }
+  .skill-level {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 0.75rem;
+  }
+  .skill-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 1s ease;
+  }
+  .skill-pct { font-size: 0.8rem; color: var(--muted); margin-top: 0.3rem; }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+  }
+
+  .project-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .project-card:hover {
+    border-color: rgba(124,106,247,0.5);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .project-thumb {
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    position: relative;
+  }
+
+  .project-thumb-1 { background: linear-gradient(135deg, #1a1a2e, #2d1b69); }
+  .project-thumb-2 { background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); }
+  .project-thumb-3 { background: linear-gradient(135deg, #1a0533, #3d0066); }
+
+  .project-body { padding: 1.5rem; }
+  .project-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+  .tag {
+    background: rgba(124,106,247,0.12);
+    border: 1px solid rgba(124,106,247,0.25);
+    color: var(--accent);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+  }
+  .project-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .project-desc { color: var(--muted); font-size: 0.9rem; line-height: 1.6; }
+
+  #education { background: var(--surface); }
+  .edu-timeline { position: relative; padding-left: 2rem; }
+  .edu-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--accent2), transparent);
+  }
+
+  .edu-item {
+    position: relative;
+    padding: 1.5rem 2rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s;
+  }
+
+  .edu-item:hover { border-color: rgba(124,106,247,0.4); }
+
+  .edu-item::before {
+    content: '';
+    position: absolute;
+    left: -2.6rem;
+    top: 1.75rem;
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .edu-year { font-family: 'DM Mono', monospace; color: var(--accent); font-size: 0.8rem; margin-bottom: 0.3rem; }
+  .edu-degree { font-weight: 700; font-size: 1.05rem; }
+  .edu-school { color: var(--muted); font-size: 0.9rem; margin-top: 0.2rem; }
+  .edu-gpa { margin-top: 0.5rem; font-size: 0.85rem; color: var(--accent2); }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+
+  .contact-info p { color: var(--muted); line-height: 1.8; margin-bottom: 2rem; }
+
+  .contact-links { display: flex; flex-direction: column; gap: 0.75rem; }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text);
+    text-decoration: none;
+    padding: 0.75rem 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+  .contact-link:hover { border-color: var(--accent); color: var(--accent); }
+  .contact-link-icon { font-size: 1.1rem; }
+
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-input {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  .form-input::placeholder { color: var(--muted); }
+  textarea.form-input { resize: vertical; min-height: 120px; }
+
+  footer {
+    padding: 2rem 4rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+
+  #chat-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #5b4dd4);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    z-index: 9999;
+    box-shadow: 0 8px 32px rgba(124,106,247,0.5);
+    transition: all 0.3s;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  #chat-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 48px rgba(124,106,247,0.7);
+    animation: none;
+  }
+
+  .chat-btn-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 18px; height: 18px;
+    background: var(--accent2);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+    animation: pulse 2s infinite;
+  }
+
+  #chat-window {
+    position: fixed;
+    bottom: 6.5rem;
+    right: 2rem;
+    width: 400px;
+    height: 580px;
+    background: var(--chat-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(124,106,247,0.15);
+    transform: scale(0.9) translateY(20px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  #chat-window.open {
+    display: flex;
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .chat-header {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, rgba(124,106,247,0.2), rgba(91,77,212,0.1));
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .chat-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .chat-header-info { flex: 1; }
+  .chat-header-name { font-weight: 700; font-size: 0.95rem; }
+  .chat-header-status {
+    font-size: 0.75rem;
+    color: #4ade80;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .chat-header-status::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .chat-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    transition: color 0.2s;
+  }
+  .chat-close:hover { color: var(--text); }
+
+  #chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    scroll-behavior: smooth;
+  }
+
+  #chat-messages::-webkit-scrollbar { width: 4px; }
+  #chat-messages::-webkit-scrollbar-track { background: transparent; }
+  #chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .msg {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-end;
+    animation: msgIn 0.3s ease;
+  }
+
+  @keyframes msgIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { flex-direction: row-reverse; }
+
+  .msg-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+  }
+
+  .msg.user .msg-avatar {
+    background: linear-gradient(135deg, var(--accent), #5b4dd4);
+    border-color: transparent;
+  }
+
+  .msg-bubble {
+    max-width: 75%;
+    padding: 0.65rem 0.9rem;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
+
+  .msg.bot .msg-bubble {
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+    color: var(--text);
+  }
+
+  .msg.user .msg-bubble {
+    background: var(--user-bubble);
+    border-bottom-right-radius: 4px;
+    color: white;
+  }
+
+  .msg-time {
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    padding: 0 0.5rem;
+  }
+
+  .msg.user .msg-time { text-align: right; }
+
+  .typing-indicator {
+    display: flex;
+    gap: 4px;
+    padding: 0.65rem 0.9rem;
+    background: var(--bot-bubble);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    border-bottom-left-radius: 4px;
+    width: fit-content;
+  }
+
+  .typing-dot {
+    width: 6px; height: 6px;
+    background: var(--muted);
+    border-radius: 50%;
+    animation: typing 1.2s infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  #suggestions {
+    padding: 0 1.25rem 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .suggestion-chip {
+    background: rgba(124,106,247,0.1);
+    border: 1px solid rgba(124,106,247,0.25);
+    color: var(--accent);
+    font-size: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .suggestion-header {
+    width: 100%;
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0 0.25rem 0.2rem;
+  }
+
+  .suggestion-more {
+    background: rgba(247,162,106,0.08) !important;
+    border-color: rgba(247,162,106,0.25) !important;
+    color: var(--accent2) !important;
+  }
+
+  .suggestion-more:hover {
+    background: rgba(247,162,106,0.18) !important;
+    border-color: var(--accent2) !important;
+  }
+
+  .chat-input-area {
+    padding: 0.75rem 1.25rem 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    border-top: 1px solid var(--border);
+    align-items: center;
+  }
+
+  #chat-input {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0.7rem 1rem;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #chat-input:focus { border-color: var(--accent); }
+  #chat-input::placeholder { color: var(--muted); }
+
+  #send-btn {
+    width: 38px; height: 38px;
+    background: linear-gradient(135deg, var(--accent), #5b4dd4);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  #send-btn:hover { transform: scale(1.1); }
+  #send-btn:active { transform: scale(0.95); }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 3rem; text-align: center; }
+    .hero-visual { display: none; }
+    .hero p { margin: 0 auto 2rem; }
+    .hero-cta { justify-content: center; }
+    section { padding: 3.5rem 1.5rem; }
+    .stats { padding: 1.5rem; gap: 1.5rem; flex-wrap: wrap; justify-content: center; }
+    .contact-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    #chat-window { width: calc(100vw - 2rem); right: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Alex Rivera</div>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#skills">Skills</a>
+    <a href="#projects">Projects</a>
+    <a href="#education">Education</a>
+    <a href="#contact">Contact</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="about">
+  <div class="hero-content">
+    <div class="hero-tag">🚀 Open to Opportunities</div>
+    <h1>Full-Stack <em>Developer</em> & AI Enthusiast</h1>
+    <p>Hi, I'm Alex Rivera — a Computer Science student at MIT passionate about building intelligent web applications, exploring machine learning, and creating impactful software solutions.</p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">View Projects</a>
+      <a href="#contact" class="btn-outline">Hire Me</a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="avatar-ring">
+      <div class="orbit-dot"></div>
+      <div class="avatar-inner">👨‍💻</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-num">3.9</div><div class="stat-label">GPA</div></div>
+  <div class="stat"><div class="stat-num">12+</div><div class="stat-label">Projects Built</div></div>
+  <div class="stat"><div class="stat-num">5</div><div class="stat-label">Internships</div></div>
+  <div class="stat"><div class="stat-num">8</div><div class="stat-label">Certifications</div></div>
+  <div class="stat"><div class="stat-num">3</div><div class="stat-label">Hackathon Wins</div></div>
+</div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">// expertise</div>
+  <h2 class="section-title">Technical Skills</h2>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-icon">⚛️</div>
+      <div class="skill-name">React / Next.js</div>
+      <div style="color:var(--muted);font-size:0.85rem">Frontend framework specialist</div>
+      <div class="skill-level"><div class="skill-fill" style="width:92%"></div></div>
+      <div class="skill-pct">92% proficiency</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🐍</div>
+      <div class="skill-name">Python / Django</div>
+      <div style="color:var(--muted);font-size:0.85rem">Backend & ML development</div>
+      <div class="skill-level"><div class="skill-fill" style="width:88%"></div></div>
+      <div class="skill-pct">88% proficiency</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🤖</div>
+      <div class="skill-name">Machine Learning</div>
+      <div style="color:var(--muted);font-size:0.85rem">TensorFlow, PyTorch, scikit-learn</div>
+      <div class="skill-level"><div class="skill-fill" style="width:80%"></div></div>
+      <div class="skill-pct">80% proficiency</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🗄️</div>
+      <div class="skill-name">Databases</div>
+      <div style="color:var(--muted);font-size:0.85rem">PostgreSQL, MongoDB, Redis</div>
+      <div class="skill-level"><div class="skill-fill" style="width:85%"></div></div>
+      <div class="skill-pct">85% proficiency</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">☁️</div>
+      <div class="skill-name">Cloud & DevOps</div>
+      <div style="color:var(--muted);font-size:0.85rem">AWS, Docker, Kubernetes, CI/CD</div>
+      <div class="skill-level"><div class="skill-fill" style="width:75%"></div></div>
+      <div class="skill-pct">75% proficiency</div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon">🔧</div>
+      <div class="skill-name">TypeScript / Node.js</div>
+      <div style="color:var(--muted);font-size:0.85rem">Full-stack JavaScript</div>
+      <div class="skill-level"><div class="skill-fill" style="width:90%"></div></div>
+      <div class="skill-pct">90% proficiency</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-label">// work</div>
+  <h2 class="section-title">Featured Projects</h2>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-thumb project-thumb-1">🧠</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">Python</span>
+          <span class="tag">TensorFlow</span>
+          <span class="tag">React</span>
+        </div>
+        <div class="project-title">NeuroScan AI</div>
+        <div class="project-desc">Brain tumor detection system using CNN achieving 96.3% accuracy. Deployed as a web app used by 3 research hospitals.</div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb project-thumb-2">🌐</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">Next.js</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">PostgreSQL</span>
+        </div>
+        <div class="project-title">EcoTrack Platform</div>
+        <div class="project-desc">Carbon footprint tracking SaaS with real-time analytics. 2,000+ active users, featured in TechCrunch.</div>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-thumb project-thumb-3">🔐</div>
+      <div class="project-body">
+        <div class="project-tags">
+          <span class="tag">Blockchain</span>
+          <span class="tag">Solidity</span>
+          <span class="tag">Web3.js</span>
+        </div>
+        <div class="project-title">VaultChain</div>
+        <div class="project-desc">Decentralized document verification system on Ethereum. Won 1st place at MIT Hackathon 2024.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="section-label">// academics</div>
+  <h2 class="section-title">Education</h2>
+  <div class="edu-timeline">
+    <div class="edu-item">
+      <div class="edu-year">2022 — Present</div>
+      <div class="edu-degree">B.S. Computer Science & Artificial Intelligence</div>
+      <div class="edu-school">Massachusetts Institute of Technology (MIT)</div>
+      <div class="edu-gpa">⭐ GPA: 3.9/4.0 · Dean's List · CS Excellence Award</div>
+    </div>
+    <div class="edu-item">
+      <div class="edu-year">2020 — 2022</div>
+      <div class="edu-degree">High School Diploma — STEM Track</div>
+      <div class="edu-school">Westview Academy, San Francisco</div>
+      <div class="edu-gpa">⭐ Valedictorian · National Merit Scholar</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-label">// get in touch</div>
+  <h2 class="section-title">Let's Connect</h2>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <p>I'm always open to interesting projects, research collaborations, and full-time opportunities. Based in Cambridge, MA — available for remote work worldwide.</p>
+      <div class="contact-links">
+        <a href="#" class="contact-link"><span class="contact-link-icon">📧</span> alex.rivera@mit.edu</a>
+        <a href="#" class="contact-link"><span class="contact-link-icon">💼</span> linkedin.com/in/alexrivera</a>
+        <a href="#" class="contact-link"><span class="contact-link-icon">🐙</span> github.com/alexrivera</a>
+        <a href="#" class="contact-link"><span class="contact-link-icon">🐦</span> @alexrivera_dev</a>
+      </div>
+    </div>
+    <div>
+      <div class="contact-form">
+        <input type="text" class="form-input" placeholder="Your Name">
+        <input type="email" class="form-input" placeholder="Your Email">
+        <input type="text" class="form-input" placeholder="Subject">
+        <textarea class="form-input" placeholder="Your message..."></textarea>
+        <button class="btn-primary" onclick="alert('Message sent! Alex will get back to you soon 🚀')">Send Message</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>© 2025 Alex Rivera. Crafted with ☕ & lots of late nights.</div>
+  <div>Cambridge, MA · Available for opportunities</div>
+</footer>
+
+<!-- CHATBOT BUTTON -->
+<button id="chat-btn" onclick="toggleChat()" title="Chat with Alex's AI Assistant">
+  <span id="chat-icon">💬</span>
+  <div class="chat-btn-badge"></div>
+</button>
+
+<!-- CHATBOT WINDOW -->
+<div id="chat-window">
+  <div class="chat-header">
+    <div class="chat-avatar">🤖</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name">Alex's Assistant</div>
+      <div class="chat-header-status">Online · Ask me anything about Alex</div>
+    </div>
+    <button class="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+
+  <div id="chat-messages"></div>
+
+  <div id="suggestions"></div>
+
+  <div class="chat-input-area">
+    <input type="text" id="chat-input" placeholder="Ask about Alex..." onkeydown="handleKey(event)">
+    <button id="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// RULE-BASED CHATBOT (no external AI API)
+// ─────────────────────────────────────────────
+
+let chatOpen = false;
+let suggestionIndex = 0;
+
+const SUGGESTIONS_CYCLE = [
+  "What's your GPA?",
+  "Tell me about NeuroScan AI",
+  "What did you do at Google DeepMind?",
+  "Are you open to full-time roles?",
+  "Tell me about VaultChain",
+  "What’s your strongest skill?",
+  "Show me your GitHub",
+  "When do you graduate?"
+];
+
+
+
+const FAQ = [
+
+  // ───────── PERSONAL ─────────
+  { keys: ["name", "who", "yourself", "introduce", "hello", "hi"],
+    answer: "Hi! I'm Alex Rivera, a Computer Science & AI student at MIT. Nice to meet you! 🚀" },
+
+  { keys: ["age", "old"],
+    answer: "I'm 22 years old." },
+
+  { keys: ["location", "where", "live", "city", "country"],
+    answer: "I'm based in Cambridge, Massachusetts (USA), near MIT." },
+
+  { keys: ["email", "contact", "mail"],
+    answer: "You can contact me at alex.rivera@mit.edu" },
+
+  { keys: ["linkedin"],
+    answer: "LinkedIn → linkedin.com/in/alexrivera" },
+
+  { keys: ["github", "git"],
+    answer: "GitHub → github.com/alexrivera" },
+
+
+  // ───────── EDUCATION ─────────
+  { keys: ["education", "study", "studies", "academic", "background"],
+    answer: "I'm currently pursuing a B.S. in Computer Science & Artificial Intelligence at MIT." },
+
+  { keys: ["college", "university", "mit"],
+    answer: "I study at MIT (Massachusetts Institute of Technology), one of the top universities in the world." },
+
+  { keys: ["degree", "course", "branch"],
+    answer: "My degree is B.S. in Computer Science & Artificial Intelligence." },
+
+  { keys: ["gpa", "grade", "cgpa"],
+    answer: "My GPA is 3.9/4.0." },
+
+  { keys: ["school", "high school", "12th"],
+    answer: "I completed my high school from Westview Academy, San Francisco, as a valedictorian." },
+
+  { keys: ["graduate", "graduation", "passout", "finish"],
+    answer: "I'll graduate in May 2026." },
+
+
+  // ───────── SKILLS ─────────
+  { keys: ["skills", "technologies", "tech stack"],
+    answer: "My key skills include React, Node.js, Python, Machine Learning, and Cloud technologies." },
+
+  { keys: ["frontend", "react", "next"],
+    answer: "I'm highly skilled in frontend development using React and Next.js." },
+
+  { keys: ["backend", "node", "django"],
+    answer: "I build backend systems using Node.js, Django, and FastAPI." },
+
+  { keys: ["machine learning", "ml", "ai"],
+    answer: "I work with Machine Learning using TensorFlow, PyTorch, and scikit-learn." },
+
+  { keys: ["database", "db", "mongodb", "sql"],
+    answer: "I use PostgreSQL, MongoDB, and Redis for database management." },
+
+
+  // ───────── PROJECTS ─────────
+  { keys: ["projects", "work", "portfolio"],
+    answer: "I've built 12+ projects including AI systems, SaaS platforms, and blockchain apps." },
+
+  { keys: ["neuroscan", "brain", "tumor"],
+    answer: "NeuroScan AI detects brain tumors with 96.3% accuracy using CNN models." },
+
+  { keys: ["ecotrack", "carbon"],
+    answer: "EcoTrack is a SaaS platform for tracking carbon footprint with 2000+ users." },
+
+  { keys: ["vaultchain", "blockchain"],
+    answer: "VaultChain is a blockchain-based document verification system. It won 1st place at MIT Hackathon." },
+
+
+  // ───────── EXPERIENCE ─────────
+  { keys: ["internship", "experience", "work experience"],
+    answer: "I have completed 5 internships including roles at Google DeepMind and Stripe." },
+
+  { keys: ["google", "deepmind"],
+    answer: "I worked as an intern at Google DeepMind in 2024 on AI alignment research." },
+
+  { keys: ["stripe"],
+    answer: "I worked at Stripe as a full-stack intern improving dashboards and UI performance." },
+
+
+  // ───────── ACHIEVEMENTS ─────────
+  { keys: ["achievement", "awards", "wins", "hackathon"],
+    answer: "I've won 3 hackathons, received CS Excellence Award, and been on the Dean’s List." },
+
+  { keys: ["certification", "certificates"],
+    answer: "I have completed 8 professional certifications in AI, cloud, and development." },
+
+
+  // ───────── AVAILABILITY ─────────
+  { keys: ["job", "hire", "available", "work", "opportunity"],
+    answer: "I'm open to internships, freelance projects, and full-time roles starting June 2026." },
+
+  { keys: ["remote"],
+    answer: "Yes, I'm available for remote work worldwide." },
+
+
+  // ───────── FALLBACK ─────────
+  { keys: [],
+    answer: "Sorry, I didn't understand that. Try asking about education, skills, projects, or experience 😊" }
+];
+
+
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  const win = document.getElementById('chat-window');
+  const icon = document.getElementById('chat-icon');
+
+  if (chatOpen) {
+    win.style.display = 'flex';
+    setTimeout(() => win.classList.add('open'), 10);
+    icon.textContent = '✕';
+    document.querySelector('.chat-btn-badge').style.display = 'none';
+
+    if (!document.querySelector('#chat-messages .msg')) {
+      setTimeout(() => {
+        addBotMessage("👋 Hey! I'm Alex's assistant. Ask me anything about Alex — projects, skills, education, internships, availability… What's up?");
+        showSuggestions();
+      }, 400);
+    }
+  } else {
+    win.classList.remove('open');
+    icon.textContent = '💬';
+    setTimeout(() => win.style.display = 'none', 300);
+  }
+}
+
+function getTime() {
+  return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function escapeHTML(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function addUserMessage(text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `
+    <div>
+      <div class="msg-bubble">${escapeHTML(text)}</div>
+      <div class="msg-time">${getTime()}</div>
+    </div>
+    <div class="msg-avatar">👤</div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function addBotMessage(text) {
+  const msgs = document.getElementById('chat-messages');
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = `
+    <div class="msg-avatar">🤖</div>
+    <div>
+      <div class="msg-bubble">${text}</div>
+      <div class="msg-time">${getTime()}</div>
+    </div>
+  `;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function findBestAnswer(question) {
+  const q = question.toLowerCase().trim();
+
+  for (const entry of FAQ) {
+    if (entry.keys.length === 0) continue; // skip fallback
+
+    for (const keyword of entry.keys) {
+      if (q.includes(keyword.toLowerCase())) {
+        return entry.answer;
+      }
+    }
+  }
+
+  // fallback
+  return FAQ[FAQ.length - 1].answer;
+}
+
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  addUserMessage(text);
+
+  // fake thinking delay
+  setTimeout(() => {
+    const reply = findBestAnswer(text);
+    addBotMessage(reply);
+    setTimeout(showSuggestions, 500);
+  }, 350);
+}
+
+function showSuggestions() {
+  const container = document.getElementById('suggestions');
+  container.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.className = 'suggestion-header';
+  header.textContent = 'Quick questions:';
+  container.appendChild(header);
+
+  for (let i = 0; i < 4; i++) {
+    const idx = (suggestionIndex + i) % SUGGESTIONS_CYCLE.length;
+    const q = SUGGESTIONS_CYCLE[idx];
+
+    const chip = document.createElement('div');
+    chip.className = 'suggestion-chip';
+    chip.textContent = q;
+    chip.onclick = () => {
+      document.getElementById('chat-input').value = q;
+      sendMessage();
+    };
+    container.appendChild(chip);
+  }
+
+  suggestionIndex = (suggestionIndex + 2) % SUGGESTIONS_CYCLE.length;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+// Optional: auto-open chat after 5 seconds (comment out if unwanted)
+setTimeout(() => {
+  if (!chatOpen) toggleChat();
+}, 5000);
+
+</script>
+
+</body>
+</html>

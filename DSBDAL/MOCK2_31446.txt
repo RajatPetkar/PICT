@@ -1,0 +1,87 @@
+1) Word Count:
+
+File: datainput.txt:
+Pune Institute of Computer Technology (PICT) was established in 1983 by a group of enterprising visionary professionals and has come a long way and marched ahead with quality education imbibed with professional and ethical values. Our mission is to be the most sought-after institute in Engineering education and research, that provides relevant knowledge, creates challenging opportunities, and inculcate values and social responsibilities. Pune Institute of Computer Technology has cut niche for itself to be one of the India’s leading institutions in higher Technical Education and Research of International repute. We celebrate the illustrious accomplishments of the past and take pride in our position as one of the top institutions of our country.
+
+At PICT, talent and ambitions come together in a culture that nourishes thinking and encourages every student to reach his or her full potential. Life at PICT is much more than the regular academic activities.  PICT campus is technically vibrant with lot of activities throughout the year, supported by professional societies like IEEE, ACM, CSI, IET. Additionally, there are clubs/groups like ROBOCON, DRONE, SIGs, BUDDYs, Automobile (electric Racing Cart), Debate, TEDx, MUN, etc. The PICT art circle is one of the top cultural groups known for its talents & achievements. The activities include but not limited to: Art, Drama, Debate, Dance, Singing, & quizzes. Our students have bagged many prestigious awards, prizes, & medals in technical, sports, and cultural events (like Microsoft Imagine Cup, Hackathons, Robocon, Purushottam Karandak, Firodiya Karandak). The students of PICT are the top achievers with big dreams and fierce drive. They are pushed to expand their thinking not only by their professors but also by the extraordinary individuals who are their peers. We wish that the student entering our institute will become holistic, responsible person contributing not only to the technocratic demands of the world but also for the betterment of the society. PICT offers three under-graduate programs in Computer Engineering, Electronics & Telecommunication Engineering, and Information Technology; and four post-graduate programs in Computer Engineering, Data Science, Electronics & Telecommunication Engineering (Wireless Communication Technology), and Information Technology. It is also a Savitribai Phule Pune University recognized research center in Computer Engineering and Electronics & Telecommunication Engineering.
+
+PICT Campus houses more than 3500+ students & 240+ Staff. The academic results of PICT are the best among all the colleges affiliated to Savitribai Phule University (SPPU). It’s heartening to know that 326 students secured SGPA of 10/10 in SPPU FE 1st Semester examination & 100% pass percentage, most of them getting distinctions. In the Final year examination (BE), the result is almost 100%, most of them securing distinction. The Placement record is excellent with an average salary of 10.5 LPA & the highest annual package of 41 Lakh, despite of the COVID-19 disruption. One of our students got selected as a software development engineer with a Package of 1.12 Crore. Almost all top-notch companies visit PICT for campus recruitment.
+
+The faculty members have undertaken research projects funded by DST, AICTE, DRDO, SPPU, etc. We have received significant consultancy work from the industry. The number of quality Publications, Patents, and Product development has also increased significantly. The Entrepreneurship Development Cell (EDC) and Startup & Innovation Cell (SIC) inculcate research culture and enterprising skills among the students and faculty by building a sustainable entrepreneurial & research ecosystem. They empower young talented minds to transform their finding, research, & innovative ideas into a product or service that creates value.
+
+The current scenario at the local, national, and international levels is intense competition with equal opportunity for all. PICT provides a student-centered learning environment with close student-faculty interaction and constant participation in the industry. Through periodic seminars, symposia, workshops, and industry visits as an integral part of the course, the students are equipped with technical knowledge, critical thinking skills, and creativity to excel in the engineering profession. Alongside, technology fairs, college carnivals, sports summits, and other such co-curricular and extra-curricular events also constitute an important part of life at PICT. I take this opportunity to appreciate the commendable job of our staff & students by adapting a new & innovate ICT-based online teaching-learning model during this challenging period of new normal.
+
+I, along with the entire PICT family, take this opportunity to thank all the stakeholders (true Brand Ambassadors/Partners) for showing solidarity and continuous support in achieving a pioneering position over the last five decades. Let me assure you that PICT will provide you with the best combination of skills, knowledge, & teamwork (not neglecting “attitude”), to succeed in your chosen career field and will equip the students with the professional acumen that will help them to meet the challenges of the modern industrial & service work environment.
+ Finally, I extend my best wishes to all my student friends for an exciting and rewarding, challenging, and stimulating, four years on this campus & a bright future thereafter.
+
+File: word_count_program.scala:
+val data = sc.textFile("datainput.txt");
+data.collect;
+val splitdata = data.flatMap(line=>line.split(" "));
+splitdata.collect;
+val mapdata = splitdata.map(word=>(word,1));
+mapdata.collect;
+val reducedata = mapdata.reduceByKey(_+_);
+reducedata.collect;
+
+Output:
+[hadoop@dbsl-10 ~]$ spark-shell
+WARNING: Using incubator modules: jdk.incubator.vector
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 4.1.1
+      /_/
+         
+Using Scala version 2.13.17 (OpenJDK 64-Bit Server VM, Java 17.0.7)
+Type in expressions to have them evaluated.
+Type :help for more information.
+26/04/20 12:17:32 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Spark context Web UI available at http://dbsl-10:4040
+Spark context available as 'sc' (master = local[*], app id = local-1776667652767).
+Spark session available as 'spark'.
+
+scala> :load word_count_program.scala
+val args: Array[String] = Array()
+Loading word_count_program.scala...
+val data: org.apache.spark.rdd.RDD[String] = datainput.txt MapPartitionsRDD[1] at textFile at word_count_program.scala:1
+warning: 1 deprecation (since 2.13.3); for details, enable `:setting -deprecation` or `:replay -deprecation`
+val res0: Array[String] = Array(Pune Institute of Computer Technology (PICT) was established in 1983 by a group of enterprising visionary professionals and has come a long way and marched ahead with quality education imbibed with professional and ethical values. Our mission is to be the most sought-after institute in Engineering education and research, that provides relevant knowledge, creates challenging opportunities, and inculcate values and social responsibilities. Pune Institute of Computer Technology has cut niche for itself to be one of the India’s leading institutions in higher Technical Education and Research of International repute. We celebrate the illustrious accomplishments of the past and take pride in our position as one of the top institutions o...
+val splitdata: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[2] at flatMap at word_count_program.scala:1
+warning: 1 deprecation (since 2.13.3); for details, enable `:setting -deprecation` or `:replay -deprecation`
+val res1: Array[String] = Array(Pune, Institute, of, Computer, Technology, (PICT), was, established, in, 1983, by, a, group, of, enterprising, visionary, professionals, and, has, come, a, long, way, and, marched, ahead, with, quality, education, imbibed, with, professional, and, ethical, values., Our, mission, is, to, be, the, most, sought-after, institute, in, Engineering, education, and, research,, that, provides, relevant, knowledge,, creates, challenging, opportunities,, and, inculcate, values, and, social, responsibilities., Pune, Institute, of, Computer, Technology, has, cut, niche, for, itself, to, be, one, of, the, India’s, leading, institutions, in, higher, Technical, Education, and, Research, of, International, repute., We, celebrate, the, illustrious...
+val mapdata: org.apache.spark.rdd.RDD[(String, Int)] = MapPartitionsRDD[3] at map at word_count_program.scala:1
+warning: 1 deprecation (since 2.13.3); for details, enable `:setting -deprecation` or `:replay -deprecation`
+val res2: Array[(String, Int)] = Array((Pune,1), (Institute,1), (of,1), (Computer,1), (Technology,1), ((PICT),1), (was,1), (established,1), (in,1), (1983,1), (by,1), (a,1), (group,1), (of,1), (enterprising,1), (visionary,1), (professionals,1), (and,1), (has,1), (come,1), (a,1), (long,1), (way,1), (and,1), (marched,1), (ahead,1), (with,1), (quality,1), (education,1), (imbibed,1), (with,1), (professional,1), (and,1), (ethical,1), (values.,1), (Our,1), (mission,1), (is,1), (to,1), (be,1), (the,1), (most,1), (sought-after,1), (institute,1), (in,1), (Engineering,1), (education,1), (and,1), (research,,1), (that,1), (provides,1), (relevant,1), (knowledge,,1), (creates,1), (challenging,1), (opportunities,,1), (and,1), (inculcate,1), (values,1), (and,1), (social,1), (re...
+val reducedata: org.apache.spark.rdd.RDD[(String, Int)] = ShuffledRDD[4] at reduceByKey at word_count_program.scala:1
+warning: 1 deprecation (since 2.13.3); for details, enable `:setting -deprecation` or `:replay -deprecation`
+val res3: Array[(String, Int)] = Array((package,1), (Technology,2), (Final,1), (its,1), (recruitment.,1), (past,1), (seminars,,1), (extraordinary,1), (PICT.,1), (have,3), (include,1), (Telecommunication,3), (highest,1), (bright,1), (responsibilities.,1), (equal,1), (industry.,2), (who,1), (challenges,1), (solidarity,1), (Science,,1), (Pune,3), (pride,1), (over,1), (Savitribai,2), (Our,2), (100%,1), (&,17), (constitute,1), (Data,1), (years,1), (creativity,1), (skills,,2), (me,1), (technology,1), (fierce,1), (country.,1), (are,6), (innovate,1), (AICTE,,1), ((BE),,1), (medals,1), (talent,1), (achievements.,1), (encourages,1), (recognized,1), (our,5), (workshops,,1), (as,3), (international,1), (profession.,1), (ecosystem.,1), (values,1), (together,1), (leading,1), ...
+
+
+2) Factorial:
+
+File: Factorial.scala:
+object Factorial {
+        def fact(n: Int): Int = {
+                if(n == 0 || n == 1)
+                        1;
+                else
+                        n * fact(n-1);
+        }
+        def main(args: Array[String]): Unit = {
+                val num = 5;
+                println("Factorial of 5: " + fact(num));
+        }
+}
+
+Output:
+[hadoop@dbsl-10 ~]$ scalac Factorial.scala
+[hadoop@dbsl-10 ~]$ scala Factorial
+Factorial of 5: 120
+
+
+

@@ -1,0 +1,13 @@
+{
+  "base_url": "/",
+  "hostname": "127.0.0.1",
+  "password": false,
+  "pid": 1238785,
+  "port": 8888,
+  "root_dir": "/home/rajat/Documents/6TH SEM/DATA SCIENCE/TE-Lab-Assignments-DSBDAL/31454",
+  "secure": false,
+  "sock": "",
+  "token": "cac3ce98576e552194533137cc363b11fe63b4669ea5e05c",
+  "url": "http://127.0.0.1:8888/",
+  "version": "2.17.0"
+}
