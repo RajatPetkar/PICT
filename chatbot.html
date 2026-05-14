@@ -2,414 +2,188 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Rajat | Portfolio</title>
+  <title>ShopBot - Customer Support</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #0f0f0f; color: #f0f0f0; }
 
-    /* NAV */
-    nav {
-      background: #1a1a1a;
-      padding: 16px 40px;
+    body {
+      background: #1a1a2e;
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      border-bottom: 2px solid #c8ff00;
-    }
-    nav .logo { font-size: 22px; font-weight: bold; color: #c8ff00; }
-    nav ul { list-style: none; display: flex; gap: 24px; }
-    nav ul a { color: #f0f0f0; text-decoration: none; }
-    nav ul a:hover { color: #c8ff00; }
-
-    /* HERO */
-    #hero {
-      text-align: center;
-      padding: 80px 40px;
-      background: linear-gradient(135deg, #0f0f0f, #1a1a2e);
-    }
-    #hero h1 { font-size: 48px; color: #c8ff00; }
-    #hero p  { font-size: 16px; color: #aaa; margin: 12px 0 28px; }
-    .btn {
-      display: inline-block;
-      padding: 12px 28px;
-      background: #c8ff00;
-      color: #000;
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 4px;
-      margin: 4px;
-    }
-    .btn-outline {
-      background: transparent;
-      border: 2px solid #c8ff00;
-      color: #c8ff00;
-    }
-
-    /* SECTIONS */
-    section { padding: 60px 40px; }
-    section h2 { font-size: 28px; color: #c8ff00; margin-bottom: 8px; }
-    .line { width: 40px; height: 3px; background: #c8ff00; margin-bottom: 32px; }
-
-    /* ABOUT */
-    #about { background: #1a1a1a; }
-    #about p { font-size: 15px; line-height: 1.9; color: #ccc; max-width: 680px; }
-
-    /* SKILLS */
-    #skills { background: #0f0f0f; }
-    .skills-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 14px;
-    }
-    .skill-card {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      padding: 18px;
-      text-align: center;
-      border-radius: 6px;
-      color: #ccc;
-    }
-    .skill-card:hover { border-color: #c8ff00; color: #c8ff00; }
-
-    /* PROJECTS */
-    #projects { background: #1a1a1a; }
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-    .project-card {
-      background: #0f0f0f;
-      border: 1px solid #333;
-      padding: 24px;
-      border-radius: 6px;
-    }
-    .project-card:hover { border-color: #c8ff00; }
-    .project-card h3 { color: #c8ff00; margin-bottom: 10px; }
-    .project-card p  { color: #aaa; font-size: 13px; line-height: 1.7; margin-bottom: 14px; }
-    .tags { display: flex; gap: 6px; flex-wrap: wrap; }
-    .tag {
-      font-size: 11px; padding: 3px 10px;
-      background: #222; border: 1px solid #444;
-      border-radius: 3px; color: #aaa;
-    }
-
-    /* CONTACT */
-    #contact { background: #0f0f0f; }
-    .contact-form {
-      max-width: 480px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .contact-form input,
-    .contact-form textarea {
-      padding: 12px; background: #1a1a1a;
-      border: 1px solid #333; color: #f0f0f0;
-      font-size: 14px; border-radius: 4px; outline: none;
+      min-height: 100vh;
       font-family: Arial, sans-serif;
     }
-    .contact-form input:focus,
-    .contact-form textarea:focus { border-color: #c8ff00; }
-    .contact-form textarea { height: 110px; resize: none; }
-    .contact-form button {
-      padding: 12px; background: #c8ff00; color: #000;
-      font-weight: bold; font-size: 14px;
-      border: none; border-radius: 4px; cursor: pointer;
-    }
 
-    /* FOOTER */
-    footer {
-      background: #1a1a1a; text-align: center;
-      padding: 20px; font-size: 13px; color: #666;
-      border-top: 1px solid #333;
-    }
-
-    /* ── CHATBOT ── */
-    #chat-btn {
-      position: fixed;
-      bottom: 28px; right: 28px;
-      width: 56px; height: 56px;
-      background: #c8ff00; color: #000;
-      border: none; border-radius: 50%;
-      font-size: 24px; cursor: pointer;
-      z-index: 999;
-      box-shadow: 0 4px 20px rgba(200,255,0,0.4);
-    }
-
-    #chat-window {
-      position: fixed;
-      bottom: 96px; right: 28px;
-      width: 340px; height: 460px;
-      background: #1a1a1a;
-      border: 1px solid #333;
+    .chat-box {
+      width: 400px;
+      background: #16213e;
       border-radius: 12px;
-      z-index: 999;
-      display: none;
-      flex-direction: column;
       overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
     }
-    #chat-window.open { display: flex; }
 
     .chat-header {
-      background: #c8ff00;
-      color: #000;
-      padding: 14px 18px;
-      font-weight: bold;
+      background: #0f3460;
+      padding: 16px 20px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 12px;
     }
-    .chat-header button {
-      background: none; border: none;
-      font-size: 18px; cursor: pointer; color: #000;
+    .avatar {
+      width: 40px; height: 40px;
+      background: #e94560;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
     }
+    .header-info .name { font-weight: bold; color: #fff; font-size: 15px; }
+    .header-info .status { color: #4ade80; font-size: 12px; }
 
-    #chat-messages {
-      flex: 1;
+    #messages {
+      height: 380px;
       overflow-y: auto;
-      padding: 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-thumb { background: #0f3460; border-radius: 2px; }
 
-    .msg-bot, .msg-user {
+    .bot-msg, .user-msg {
       padding: 10px 14px;
       border-radius: 10px;
       font-size: 13px;
       line-height: 1.6;
-      max-width: 85%;
+      max-width: 80%;
     }
-    .msg-bot  { background: #0f0f0f; border: 1px solid #333; align-self: flex-start; color: #f0f0f0; }
-    .msg-user { background: #c8ff00; color: #000; align-self: flex-end; font-weight: bold; }
+    .bot-msg  { background: #0f3460; color: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 2px; }
+    .user-msg { background: #e94560; color: #fff;    align-self: flex-end;   border-bottom-right-radius: 2px; }
 
-    .chat-input-row {
-      display: flex;
-      border-top: 1px solid #333;
+    .suggestions {
+      padding: 0 16px 10px;
+      display: flex; flex-wrap: wrap; gap: 6px;
     }
-    #chat-input {
-      flex: 1; padding: 12px;
-      background: #0f0f0f; border: none;
+    .chip {
+      background: #0f3460;
+      color: #a0c4ff;
+      border: 1px solid #1a4a8a;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .chip:hover { background: #1a4a8a; }
+
+    .input-row {
+      display: flex;
+      border-top: 1px solid #0f3460;
+    }
+    #user-input {
+      flex: 1; padding: 14px;
+      background: #1a1a2e; border: none;
       color: #f0f0f0; font-size: 13px; outline: none;
       font-family: Arial, sans-serif;
     }
-    #chat-send {
-      padding: 12px 18px;
-      background: #c8ff00; color: #000;
-      border: none; font-weight: bold; cursor: pointer;
+    #user-input::placeholder { color: #555; }
+    #send-btn {
+      padding: 14px 20px;
+      background: #e94560; color: #fff;
+      border: none; font-weight: bold; cursor: pointer; font-size: 16px;
     }
+    #send-btn:hover { background: #c73652; }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="logo">RAJAT</div>
-  <ul>
-    <li><a href="#about">About</a></li>
-    <li><a href="#skills">Skills</a></li>
-    <li><a href="#projects">Projects</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
-
-<!-- HERO -->
-<section id="hero">
-  <h1>HI, I'M RAJAT</h1>
-  <p>Full-Stack Developer &nbsp;|&nbsp; PICT Pune &nbsp;|&nbsp; SIH Hackathon Winner</p>
-  <a href="#projects" class="btn">View Projects</a>
-  <a href="#contact" class="btn btn-outline">Contact Me</a>
-</section>
-
-<!-- ABOUT -->
-<section id="about">
-  <h2>ABOUT</h2>
-  <div class="line"></div>
-  <p>
-    I am a Computer Engineering student at PICT Pune with hands-on industry
-    experience. I completed a 4-month internship at Automation Manifold Company
-    building Java Swing applications. I won the Smart India Hackathon (SIH) 2023.
-    I enjoy building full-stack web apps using the MERN stack and love working
-    with Linux environments.
-  </p>
-</section>
-
-<!-- SKILLS -->
-<section id="skills">
-  <h2>SKILLS</h2>
-  <div class="line"></div>
-  <div class="skills-grid">
-    <div class="skill-card">HTML / CSS</div>
-    <div class="skill-card">JavaScript</div>
-    <div class="skill-card">React.js</div>
-    <div class="skill-card">Node.js</div>
-    <div class="skill-card">Express.js</div>
-    <div class="skill-card">MongoDB</div>
-    <div class="skill-card">Java</div>
-    <div class="skill-card">Python</div>
-    <div class="skill-card">Linux</div>
-    <div class="skill-card">REST APIs</div>
-    <div class="skill-card">Git / GitHub</div>
-    <div class="skill-card">MySQL</div>
-  </div>
-</section>
-
-<!-- PROJECTS -->
-<section id="projects">
-  <h2>PROJECTS</h2>
-  <div class="line"></div>
-  <div class="projects-grid">
-    <div class="project-card">
-      <h3>Mall Queue System</h3>
-      <p>SaaS platform for cashier-less checkout in malls. QR fraud prevention, Razorpay payments, JWT auth, analytics dashboard.</p>
-      <div class="tags">
-        <span class="tag">MERN</span>
-        <span class="tag">Razorpay</span>
-        <span class="tag">JWT</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3>SIH Winner Project</h3>
-      <p>National hackathon winning solution. Built with 7-person team, integrated BARD API for intelligent automation.</p>
-      <div class="tags">
-        <span class="tag">Python</span>
-        <span class="tag">BARD API</span>
-        <span class="tag">Team Lead</span>
-      </div>
-    </div>
-    <div class="project-card">
-      <h3>Java Swing App</h3>
-      <p>Desktop app built during 4-month internship at Automation Manifold Company for industrial automation workflows.</p>
-      <div class="tags">
-        <span class="tag">Java</span>
-        <span class="tag">Swing</span>
-        <span class="tag">Industry</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <h2>CONTACT</h2>
-  <div class="line"></div>
-  <div class="contact-form">
-    <input type="text"  placeholder="Your Name" />
-    <input type="email" placeholder="Your Email" />
-    <textarea           placeholder="Your Message"></textarea>
-    <button onclick="this.textContent='Sent ✓'; this.disabled=true;">Send Message</button>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>&copy; 2026 Rajat. All rights reserved.</footer>
-
-
-<!-- ── CHATBOT ── -->
-<button id="chat-btn" onclick="toggleChat()">💬</button>
-
-<div id="chat-window">
+<div class="chat-box">
   <div class="chat-header">
-    <span>🤖 Rajat's Assistant</span>
-    <button onclick="toggleChat()">✕</button>
+    <div class="avatar">🛒</div>
+    <div class="header-info">
+      <div class="name">ShopBot</div>
+      <div class="status">● Online — Customer Support</div>
+    </div>
   </div>
-  <div id="chat-messages">
-    <div class="msg-bot">Hi! Ask me about Rajat's skills, projects, education, or experience 👋</div>
+
+  <div id="messages">
+    <div class="bot-msg">Hello! Welcome to ShopBot 🛒<br>How can I help you today?</div>
   </div>
-  <div class="chat-input-row">
-    <input id="chat-input" type="text" placeholder="Type your question..." onkeydown="if(event.key==='Enter') sendMsg()" />
-    <button id="chat-send" onclick="sendMsg()">Send</button>
+
+  <div class="suggestions" id="chips">
+    <span class="chip" onclick="ask('Track my order')">Track Order</span>
+    <span class="chip" onclick="ask('Return policy')">Return Policy</span>
+    <span class="chip" onclick="ask('Payment methods')">Payment</span>
+    <span class="chip" onclick="ask('Contact support')">Contact</span>
+  </div>
+
+  <div class="input-row">
+    <input id="user-input" type="text" placeholder="Type your message..."
+           onkeydown="if(event.key==='Enter') sendMsg()" />
+    <button id="send-btn" onclick="sendMsg()">➤</button>
   </div>
 </div>
 
-
 <script>
-  // ── TOGGLE CHAT ──
-  function toggleChat() {
-    var win = document.getElementById('chat-window');
-    win.classList.toggle('open');
-  }
-
-  // ── FAQ DATA ──
   var FAQ = [
-    { keys: ["name","who","yourself","hello","hi"],
-      ans:  "I'm Rajat, a Computer Engineering student at PICT Pune." },
+    { keys: ["track","order","status","delivery","where"],
+      ans:  "📦 To track your order, go to Orders > Track. You'll get live updates via SMS/email. Usually delivered in 3–5 business days." },
 
-    { keys: ["college","university","pict","education","study"],
-      ans:  "I study Computer Engineering at PICT Pune — my dream college!" },
+    { keys: ["return","refund","exchange","back","cancel"],
+      ans:  "🔄 We offer a 7-day return policy. Items must be unused and in original packaging. Refund is processed in 3–5 business days." },
 
-    { keys: ["gpa","grade","marks","cgpa"],
-      ans:  "I maintain a strong academic record at PICT Pune." },
+    { keys: ["payment","pay","method","upi","card","cash"],
+      ans:  "💳 We accept UPI, Credit/Debit Cards, Net Banking, and Cash on Delivery (COD)." },
 
-    { keys: ["internship","experience","job","work"],
-      ans:  "I did a 4-month internship at Automation Manifold Company building Java Swing applications." },
+    { keys: ["contact","support","help","human","agent","call","phone"],
+      ans:  "📞 Reach us at support@shopbot.com or call 1800-123-456 (Mon–Sat, 9AM–6PM)." },
 
-    { keys: ["hackathon","sih","award","win"],
-      ans:  "I won the Smart India Hackathon (SIH) 2023 with my team of 7 people! 🏆" },
+    { keys: ["discount","coupon","offer","promo","sale"],
+      ans:  "🎉 Use code SAVE10 for 10% off your first order. Check the Offers page for more deals!" },
 
-    { keys: ["project","mall","queue","sih","swing"],
-      ans:  "My projects include: Mall Queue System (MERN + Razorpay), SIH Winner Project (Python + BARD API), and Java Swing App (internship)." },
+    { keys: ["account","login","signup","password","register"],
+      ans:  "👤 To create/login to your account, click Sign In on the top right. Use Forgot Password to reset." },
 
-    { keys: ["skill","tech","stack","language"],
-      ans:  "I know HTML, CSS, JavaScript, React, Node.js, MongoDB, Java, Python, Linux, and REST APIs." },
+    { keys: ["shipping","charge","free","delivery fee","cost"],
+      ans:  "🚚 Free shipping on orders above ₹499. Standard delivery charge is ₹49." },
 
-    { keys: ["mern","react","node","mongodb"],
-      ans:  "Yes! MERN stack (MongoDB, Express, React, Node.js) is my primary full-stack technology." },
+    { keys: ["hello","hi","hey","good morning","good evening","howdy"],
+      ans:  "👋 Hello! Great to have you here. How can I assist you today?" },
 
-    { keys: ["java"],
-      ans:  "I used Java and Swing during my internship for building desktop automation apps." },
-
-    { keys: ["python"],
-      ans:  "I've used Python for OpenCV projects and the SIH hackathon with BARD API." },
-
-    { keys: ["linux","arch"],
-      ans:  "I use Arch Linux daily with zsh + oh-my-zsh. I've set up KVM virtualization too!" },
-
-    { keys: ["hire","available","freelance","opportunity"],
-      ans:  "Yes, I'm open to internships, freelance projects, and collaborations. Use the contact form!" },
-
-    { keys: ["contact","email","reach"],
-      ans:  "You can reach me through the Contact section on this page." },
-
-    { keys: ["location","where","pune","india"],
-      ans:  "I'm based in Pune, Maharashtra, India." },
+    { keys: ["thank","thanks","bye","goodbye","ok","okay"],
+      ans:  "😊 You're welcome! Have a great day. Feel free to come back anytime!" },
   ];
-
-  // ── SEND MESSAGE ──
-  function sendMsg() {
-    var input = document.getElementById('chat-input');
-    var text  = input.value.trim();
-    if (!text) return;
-
-    // show user bubble
-    addMsg(text, 'msg-user');
-    input.value = '';
-
-    // find answer
-    var answer = getAnswer(text);
-    setTimeout(function() { addMsg(answer, 'msg-bot'); }, 300);
-  }
-
-  function addMsg(text, cls) {
-    var msgs = document.getElementById('chat-messages');
-    var div  = document.createElement('div');
-    div.className = cls;
-    div.textContent = text;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-  }
 
   function getAnswer(q) {
     q = q.toLowerCase();
     for (var i = 0; i < FAQ.length; i++) {
       for (var j = 0; j < FAQ[i].keys.length; j++) {
-        if (q.indexOf(FAQ[i].keys[j]) !== -1) {
-          return FAQ[i].ans;
-        }
+        if (q.indexOf(FAQ[i].keys[j]) !== -1) return FAQ[i].ans;
       }
     }
-    return "Sorry, I didn't get that. Try asking about skills, projects, education, or experience 😊";
+    return "🤔 Sorry, I didn't understand that. Try asking about orders, returns, payments, or type 'Contact' to reach a human agent.";
+  }
+
+  function addMsg(text, cls) {
+    var msgs = document.getElementById('messages');
+    var div  = document.createElement('div');
+    div.className = cls;
+    div.innerHTML = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function ask(text) {
+    addMsg(text, 'user-msg');
+    setTimeout(function() { addMsg(getAnswer(text), 'bot-msg'); }, 300);
+  }
+
+  function sendMsg() {
+    var input = document.getElementById('user-input');
+    var text  = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    ask(text);
   }
 </script>
 
