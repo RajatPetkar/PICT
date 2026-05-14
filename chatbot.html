@@ -1,191 +1,134 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-  <meta charset="UTF-8" />
-  <title>ShopBot - Customer Support</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    <title>Customer Support Chatbot</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f4f4;
+        }
 
-    body {
-      background: #1a1a2e;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      font-family: Arial, sans-serif;
-    }
+        .chatbox {
+            width: 400px;
+            margin: auto;
+            margin-top: 50px;
+            background: white;
+            padding: 15px;
+            border: 1px solid gray;
+        }
 
-    .chat-box {
-      width: 400px;
-      background: #16213e;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    }
+        #chat {
+            height: 300px;
+            border: 1px solid gray;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
 
-    .chat-header {
-      background: #0f3460;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .avatar {
-      width: 40px; height: 40px;
-      background: #e94560;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-    }
-    .header-info .name { font-weight: bold; color: #fff; font-size: 15px; }
-    .header-info .status { color: #4ade80; font-size: 12px; }
+        input {
+            width: 75%;
+            padding: 8px;
+        }
 
-    #messages {
-      height: 380px;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    #messages::-webkit-scrollbar { width: 4px; }
-    #messages::-webkit-scrollbar-thumb { background: #0f3460; border-radius: 2px; }
+        button {
+            padding: 8px;
+        }
+    </style>
 
-    .bot-msg, .user-msg {
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 13px;
-      line-height: 1.6;
-      max-width: 80%;
-    }
-    .bot-msg  { background: #0f3460; color: #e0e0e0; align-self: flex-start; border-bottom-left-radius: 2px; }
-    .user-msg { background: #e94560; color: #fff;    align-self: flex-end;   border-bottom-right-radius: 2px; }
-
-    .suggestions {
-      padding: 0 16px 10px;
-      display: flex; flex-wrap: wrap; gap: 6px;
-    }
-    .chip {
-      background: #0f3460;
-      color: #a0c4ff;
-      border: 1px solid #1a4a8a;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .chip:hover { background: #1a4a8a; }
-
-    .input-row {
-      display: flex;
-      border-top: 1px solid #0f3460;
-    }
-    #user-input {
-      flex: 1; padding: 14px;
-      background: #1a1a2e; border: none;
-      color: #f0f0f0; font-size: 13px; outline: none;
-      font-family: Arial, sans-serif;
-    }
-    #user-input::placeholder { color: #555; }
-    #send-btn {
-      padding: 14px 20px;
-      background: #e94560; color: #fff;
-      border: none; font-weight: bold; cursor: pointer; font-size: 16px;
-    }
-    #send-btn:hover { background: #c73652; }
-  </style>
 </head>
+
 <body>
 
-<div class="chat-box">
-  <div class="chat-header">
-    <div class="avatar">🛒</div>
-    <div class="header-info">
-      <div class="name">ShopBot</div>
-      <div class="status">● Online — Customer Support</div>
+    <div class="chatbox">
+
+        <h2 align="center">Shopping Chatbot</h2>
+
+        <div id="chat">
+            <p><b>Bot:</b> Hello! How can I help you?</p>
+        </div>
+
+        <input type="text" id="msg" placeholder="Enter message">
+        <button onclick="sendMessage()">Send</button>
+
     </div>
-  </div>
 
-  <div id="messages">
-    <div class="bot-msg">Hello! Welcome to ShopBot 🛒<br>How can I help you today?</div>
-  </div>
+    <script>
 
-  <div class="suggestions" id="chips">
-    <span class="chip" onclick="ask('Track my order')">Track Order</span>
-    <span class="chip" onclick="ask('Return policy')">Return Policy</span>
-    <span class="chip" onclick="ask('Payment methods')">Payment</span>
-    <span class="chip" onclick="ask('Contact support')">Contact</span>
-  </div>
+        var FAQ = {
 
-  <div class="input-row">
-    <input id="user-input" type="text" placeholder="Type your message..."
-           onkeydown="if(event.key==='Enter') sendMsg()" />
-    <button id="send-btn" onclick="sendMsg()">➤</button>
-  </div>
-</div>
+            order: "Your order will arrive in 3-5 days.",
 
-<script>
-  var FAQ = [
-    { keys: ["track","order","status","delivery","where"],
-      ans:  "📦 To track your order, go to Orders > Track. You'll get live updates via SMS/email. Usually delivered in 3–5 business days." },
+            return: "You can return the product within 7 days.",
 
-    { keys: ["return","refund","exchange","back","cancel"],
-      ans:  "🔄 We offer a 7-day return policy. Items must be unused and in original packaging. Refund is processed in 3–5 business days." },
+            payment: "We accept UPI, Cards and Cash on Delivery.",
 
-    { keys: ["payment","pay","method","upi","card","cash"],
-      ans:  "💳 We accept UPI, Credit/Debit Cards, Net Banking, and Cash on Delivery (COD)." },
+            contact: "Call us on 1800-123-456.",
 
-    { keys: ["contact","support","help","human","agent","call","phone"],
-      ans:  "📞 Reach us at support@shopbot.com or call 1800-123-456 (Mon–Sat, 9AM–6PM)." },
+            discount: "Use SAVE10 to get 10% discount.",
 
-    { keys: ["discount","coupon","offer","promo","sale"],
-      ans:  "🎉 Use code SAVE10 for 10% off your first order. Check the Offers page for more deals!" },
+            shipping: "Free shipping above ₹499.",
 
-    { keys: ["account","login","signup","password","register"],
-      ans:  "👤 To create/login to your account, click Sign In on the top right. Use Forgot Password to reset." },
+            hello: "Hello Customer!",
 
-    { keys: ["shipping","charge","free","delivery fee","cost"],
-      ans:  "🚚 Free shipping on orders above ₹499. Standard delivery charge is ₹49." },
+            bye: "Thank you for visiting."
 
-    { keys: ["hello","hi","hey","good morning","good evening","howdy"],
-      ans:  "👋 Hello! Great to have you here. How can I assist you today?" },
+        };
 
-    { keys: ["thank","thanks","bye","goodbye","ok","okay"],
-      ans:  "😊 You're welcome! Have a great day. Feel free to come back anytime!" },
-  ];
+        function sendMessage() {
+            var input = document.getElementById("msg");
+            var text = input.value.toLowerCase();
 
-  function getAnswer(q) {
-    q = q.toLowerCase();
-    for (var i = 0; i < FAQ.length; i++) {
-      for (var j = 0; j < FAQ[i].keys.length; j++) {
-        if (q.indexOf(FAQ[i].keys[j]) !== -1) return FAQ[i].ans;
-      }
-    }
-    return "🤔 Sorry, I didn't understand that. Try asking about orders, returns, payments, or type 'Contact' to reach a human agent.";
-  }
+            var chat = document.getElementById("chat");
 
-  function addMsg(text, cls) {
-    var msgs = document.getElementById('messages');
-    var div  = document.createElement('div');
-    div.className = cls;
-    div.innerHTML = text;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-  }
+            if (text == "")
+                return;
 
-  function ask(text) {
-    addMsg(text, 'user-msg');
-    setTimeout(function() { addMsg(getAnswer(text), 'bot-msg'); }, 300);
-  }
+            chat.innerHTML += "<p><b>You:</b> " + text + "</p>";
 
-  function sendMsg() {
-    var input = document.getElementById('user-input');
-    var text  = input.value.trim();
-    if (!text) return;
-    input.value = '';
-    ask(text);
-  }
-</script>
+            var reply = "Sorry, I did not understand.";
+
+            if (text.includes("order")) {
+                reply = FAQ.order;
+            }
+
+            else if (text.includes("return")) {
+                reply = FAQ.return;
+            }
+
+            else if (text.includes("payment")) {
+                reply = FAQ.payment;
+            }
+
+            else if (text.includes("contact")) {
+                reply = FAQ.contact;
+            }
+
+            else if (text.includes("discount")) {
+                reply = FAQ.discount;
+            }
+
+            else if (text.includes("shipping")) {
+                reply = FAQ.shipping;
+            }
+
+            else if (text.includes("hello") || text.includes("hi")) {
+                reply = FAQ.hello;
+            }
+
+            else if (text.includes("bye")) {
+                reply = FAQ.bye;
+            }
+
+            chat.innerHTML += "<p><b>Bot:</b> " + reply + "</p>";
+
+            input.value = "";
+
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+    </script>
 
 </body>
+
 </html>
