@@ -2,36 +2,78 @@
 using namespace std;
 
 int main() {
-    int n = 5;
-    vector<pair<int,int>> adj[5];
+    int n, e;
 
-    // u -> v (weight)
-    adj[0].push_back({1,2});
-    adj[0].push_back({2,4});
-    adj[1].push_back({2,1});
-    adj[1].push_back({3,7});
-    adj[2].push_back({4,3});
+    cout << "Enter number of vertices: ";
+    cin >> n;
 
+    cout << "Enter number of edges: ";
+    cin >> e;
+
+    vector<pair<int,int>> adj[n];
+    // Input graph
+    cout << "\nEnter edges and weights:\n";
+    cout << "Format: source destination weight\n";
+    for(int i = 0; i < e; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        adj[u].push_back({v, w});
+        // For undirected graph use this also:
+        // adj[v].push_back({u, w});
+    }
+    // Display graph
+    cout << "\nAdjacency List:\n";
+    for(int i = 0; i < n; i++) {
+        cout << i << " -> ";
+        for(auto x : adj[i]) {
+            cout << "(" << x.first
+                 << "," << x.second << ") ";
+        }
+        cout << endl;
+    }
+
+    int source;
+    cout << "\nEnter source vertex: ";
+    cin >> source;
+
+    // Dijkstra
     vector<int> dist(n, INT_MAX);
-    dist[0] = 0;
+    dist[source] = 0;
 
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<>> pq;
-    pq.push({0,0});
-
+    priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> pq;
+    pq.push({0, source});
     while(!pq.empty()) {
+
         int u = pq.top().second;
         pq.pop();
 
         for(auto x : adj[u]) {
-            int v = x.first, w = x.second;
+
+            int v = x.first;
+            int w = x.second;
 
             if(dist[v] > dist[u] + w) {
+
                 dist[v] = dist[u] + w;
+
                 pq.push({dist[v], v});
             }
         }
     }
 
-    for(int i = 0; i < n; i++)
-        cout << dist[i] << " ";
+    // Output shortest distances
+    cout << "\nShortest Distances:\n";
+    for(int i = 0; i < n; i++) {
+        cout << "Distance from "
+             << source
+             << " to "
+             << i
+             << " = ";
+        if(dist[i] == INT_MAX)
+            cout << "INF";
+        else
+          cout << dist[i];
+        cout << endl;
+    }
+    return 0;
 }
