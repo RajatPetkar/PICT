@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Portfolio Website</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #f5f7fa;
+    }
+
+    /* ---------- NAVBAR ---------- */
+
+    nav {
+      background: #1e272e;
+      padding: 15px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 20px;
+      font-size: 18px;
+    }
+
+    nav a:hover {
+      color: #00a8ff;
+    }
+
+    /* ---------- MAIN SECTION ---------- */
+
+    .main {
+      height: 100vh;
+      text-align: center;
+      color: white;
+      padding-top: 120px;
+
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.6),
+          rgba(0, 0, 0, 0.6)),
+        url("https://picsum.photos/1200/700?1");
+
+      background-size: cover;
+      background-position: center;
+    }
+
+    .main img {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      border: 4px solid white;
+      margin-bottom: 20px;
+    }
+
+    .main h1 {
+      font-size: 50px;
+      margin-bottom: 10px;
+    }
+
+    .main p {
+      font-size: 22px;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 12px 25px;
+      border: none;
+      background: #00a8ff;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    /* ---------- ABOUT SECTION ---------- */
+
+    .about {
+      padding: 60px 40px;
+      background: white;
+      text-align: center;
+    }
+
+    .about img {
+      width: 250px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .about h2 {
+      color: #00a8ff;
+      margin-bottom: 20px;
+    }
+
+    .about p {
+      width: 80%;
+      margin: auto;
+      line-height: 28px;
+      font-size: 18px;
+    }
+
+    /* ---------- CONTACT ---------- */
+
+    .contact {
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    .contact h2 {
+      color: #00a8ff;
+      margin-bottom: 20px;
+    }
+
+    .contact input,
+    .contact textarea {
+      width: 80%;
+      padding: 12px;
+      margin: 10px;
+      border: 1px solid #ccc;
+    }
+
+    .contact button {
+      padding: 12px 25px;
+      border: none;
+      background: #00a8ff;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* ---------- CHATBOT ---------- */
+
+    .chat-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #00a8ff;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .chat-box {
+      display: none;
+      position: fixed;
+      right: 20px;
+      bottom: 80px;
+      width: 300px;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+    }
+
+    #messages {
+      height: 220px;
+      overflow: auto;
+      border: 1px solid #ccc;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    #input {
+      width: 70%;
+      padding: 8px;
+    }
+
+    /* ---------- FOOTER ---------- */
+
+    footer {
+      background: #1e272e;
+      color: white;
+      text-align: center;
+      padding: 15px;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+
+  <nav>
+
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+
+  </nav>
+
+  <!-- MAIN SECTION -->
+
+  <section class="main" id="home">
+
+    <img src="https://picsum.photos/300/200?1">
+
+    <h1>Rajat Petkar</h1>
+
+    <p>MERN Stack Developer | Web Developer</p>
+
+    <button class="btn">
+      View Projects
+    </button>
+
+  </section>
+
+  <!-- ABOUT SECTION -->
+
+  <section class="about" id="about">
+
+    <img src="https://picsum.photos/400/250?2">
+
+    <h2>About Me</h2>
+
+    <p>
+
+      Hello! My name is Rajat Petkar.
+      I am a passionate MERN Stack Developer and
+      Web Developer who loves building simple,
+      modern and user-friendly websites.
+
+      I have skills in HTML, CSS, JavaScript,
+      React.js, Node.js and MongoDB.
+      I enjoy creating portfolio websites,
+      chatbot applications and AI based projects.
+
+      I always try to learn new technologies
+      and improve my development skills.
+      My goal is to become a successful software
+      engineer and work on innovative projects
+      that solve real-world problems.
+
+    </p>
+
+  </section>
+
+  <!-- CONTACT SECTION -->
+
+  <section class="contact" id="contact">
+
+    <h2>Contact Me</h2>
+
+    <form>
+
+      <input type="text" placeholder="Enter Name">
+
+      <br>
+
+      <input type="email" placeholder="Enter Email">
+
+      <br>
+
+      <textarea rows="5" placeholder="Enter Message"></textarea>
+
+      <br>
+
+      <button type="submit">
+        Send
+      </button>
+
+    </form>
+
+  </section>
+
+  <!-- CHAT BUTTON -->
+
+  <button class="chat-btn" onclick="toggleChat()">
+
+    💬
+
+  </button>
+
+  <!-- CHATBOX -->
+
+  <div class="chat-box" id="chatbox">
+
+    <div id="messages"></div>
+
+    <input type="text" id="input" placeholder="Type message..." onkeypress="enter(event)">
+
+    <button onclick="send()">
+      Send
+    </button>
+
+  </div>
+
+  <!-- FOOTER -->
+
+  <footer>
+
+    Made by Rajat @2026 All Rights Reserved
+
+  </footer>
+
+  <!-- JAVASCRIPT -->
+
+  <script>
+
+    let chatOpen = false;
+
+    /* ---------- FAQ ---------- */
+
+    const FAQ = [
+
+      {
+        keys: ["hello", "hi"],
+        answer: "Hello 👋"
+      },
+
+      {
+        keys: ["name","who are you"],
+        answer: "My name is Rajat Petkar."
+      },
+
+      {
+        keys: ["skills"],
+        answer: "My skills are HTML, CSS, JavaScript, React.js and Node.js."
+      },
+
+      {
+        keys: ["project"],
+        answer: "I created portfolio websites, chatbot applications and AI projects."
+      },
+
+      {
+        keys: ["education"],
+        answer: "I am studying Computer Engineering."
+      },
+
+      {
+        keys: ["contact", "email"],
+        answer: "Email: rajat@gmail.com"
+      },
+
+      {
+        keys: ["bye"],
+        answer: "Goodbye 😊"
+      }
+
+    ];
+
+    /* ---------- OPEN CHAT ---------- */
+
+    function toggleChat() {
+
+      chatOpen = !chatOpen;
+
+      document.getElementById("chatbox").style.display =
+        chatOpen ? "block" : "none";
+    }
+
+    /* ---------- SEND ---------- */
+
+    function send() {
+
+      let input =
+        document.getElementById("input");
+
+      let text = input.value.trim();
+
+      if (text == "") return;
+
+      addMessage("You: " + text);
+
+      input.value = "";
+
+      let reply =
+        getReply(text.toLowerCase());
+
+      addMessage("Bot: " + reply);
+    }
+
+    /* ---------- ADD MESSAGE ---------- */
+
+    function addMessage(msg) {
+
+      let box =
+        document.getElementById("messages");
+
+      box.innerHTML += "<p>" + msg + "</p>";
+
+      box.scrollTop = box.scrollHeight;
+    }
+
+    /* ---------- ENTER KEY ---------- */
+
+    function enter(e) {
+
+      if (e.key == "Enter") {
+
+        send();
+      }
+    }
+
+    /* ---------- CHATBOT LOGIC ---------- */
+
+    function getReply(q) {
+
+      for (let i = 0; i < FAQ.length; i++) {
+
+        let item = FAQ[i];
+
+        for (let j = 0; j < item.keys.length; j++) {
+
+          if (q.includes(item.keys[j])) {
+
+            return item.answer;
+          }
+        }
+      }
+
+      return "I don't understand 😅";
+    }
+
+  </script>
+
+</body>
+
+</html>
